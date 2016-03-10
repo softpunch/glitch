@@ -26,7 +26,6 @@ body {
   padding-left: 1em;
   min-height: 500px;
   box-shadow: 8px 8px 0px 0px rgba(0,0,0,0.5);
-  color:#ffffff;
   background-color:#333;
 }
 
@@ -55,7 +54,8 @@ textarea, .monospace {
   color:#ffc107;
 }
 .librarylink.current {
-  color: #fff;
+  color: #e91e63;
+  font-weight: 700;
 }
 .librarylink:hover {
   color: #333;

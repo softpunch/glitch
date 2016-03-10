@@ -1,5 +1,8 @@
 import './index.html';
 import 'font-awesome/css/font-awesome.css';
+import './favicon.png';
+import './glitch180x180.png';
+import './glitch192x192.png';
 import './styles.css';
 import './roboto.css';
 

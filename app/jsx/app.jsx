@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+import Visualizer from './visualizer.jsx';
 import Editor from './editor.jsx';
 import Library from './library.jsx';
 import Manual from './manual.jsx';
@@ -62,7 +63,7 @@ export default class App extends React.Component {
 
     return <div className="content" style={{display: 'flex', flexDirection: 'row'}}>
       <div style={{display: 'flex', flex: '1', flexDirection: 'column'}}>
-	<Header />
+	<Header glitch={this.props.glitch} />
 	<div style={{flex: '1', display: 'flex'}}>
 	  {content}
 	</div>
@@ -108,11 +109,7 @@ class Header extends React.Component {
       <h1 className="monospace" style={{height: '72px', lineHeight:'72px', fontSize: '18pt'}}>
 	#glitch
       </h1>
-      <div style={{flex: '1'}}>
-	{
-	  // TODO: visualizer
-	}
-      </div>
+      <Visualizer glitch={this.props.glitch} />
     </div>
   }
 }

@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+//t*8+8*s(t/(15&(t>>11)))
+
 var library = [
   {f: 't', tags: []},
   {f: 't&t>>8', tags: []},

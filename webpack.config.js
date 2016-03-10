@@ -11,6 +11,7 @@ var config = {
   module: {
     loaders: [
       {test: /\.html$/, loader: 'file?name=[name].[ext]'},
+      {test: /\.png$/, loader: 'file?name=[name].[ext]'},
       {test: /\.jsx?$/, exclude: /node_modules/, loader: 'babel', query: {presets: ['react', 'es2015']}},
       {test: /\.css$/, loader: 'style!css'},
       {test: /\.woff(\?v=\d+\.\d+\.\d+)?$/, loader: "url?limit=10000&mimetype=application/font-woff"},

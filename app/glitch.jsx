@@ -3,7 +3,7 @@ import expr from './expr';
 var FUNCS = {
   's': function(a) {
     if (a) {
-      return Math.sin(a());
+      return Math.sin(a()*Math.PI/128)*127+128;
     } else {
       return 0;
     }
@@ -32,7 +32,6 @@ var FUNCS = {
 
 export default class Glitch {
   constructor() {
-    console.log('constructor');
     var bufsz = 2*4096;
 
     this.compile('');
@@ -60,14 +59,12 @@ export default class Glitch {
     this.pcmNode = this.audio.createScriptProcessor(bufsz, 0, 1);
     this.pcmNode.onaudioprocess = (e) => {
       var out = e.outputBuffer.getChannelData(0);
-      console.log('onaudioprocess', this.input, out.length);
       for (var i = 0; i < out.length; i++) {
         var v = this.player();
         out[i] = (v&0xff)/0x80 - 1;
         this.vars.r(this.vars.r()+1);
         this.vars.t(Math.round(this.vars.r()*this.sampleStep));
       }
-      console.log(out, this.vars.r(), this.vars.t());
     }
 
     this.delay = this.audio.createDelay(0.5);
@@ -94,7 +91,7 @@ export default class Glitch {
     } else {
       this.vars = {'t': expr.varExpr(0), 'r': expr.varExpr(0)};
       this.player = expr.parse(this.validInput, this.vars, FUNCS);
-      this.pcmNode.connect(this.hp);
+      this.pcmNode.connect(this.analyser);
     }
   }
   compile(s) {
