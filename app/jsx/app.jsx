@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import Editor from './editor.jsx';
+import Library from './library.jsx';
 import Manual from './manual.jsx';
 
 export default class App extends React.Component {
@@ -31,6 +32,8 @@ export default class App extends React.Component {
 
     if (this.state.mode == 'code') {
       content = <Editor glitch={this.props.glitch} style={{flex: '1'}}/>
+    } else if (this.state.mode == 'lib') {
+      content = <Library />
     } else {
       content = <Manual />
     }
@@ -41,14 +44,12 @@ export default class App extends React.Component {
 	active="true"
 	onClick={this.togglePlayback.bind(this)}
       />
-	//color='#ff9800' />
     } else {
       playButton = <IconButton
 	icon="fa-play"
 	active="true"
 	onClick={this.togglePlayback.bind(this)}
       />
-	//color='#ff5722' />
     }
 
     return <div className="content" style={{display: 'flex', flexDirection: 'row'}}>
@@ -64,6 +65,10 @@ export default class App extends React.Component {
 	  icon="fa-code"
 	  active={this.state.mode == "code"}
 	  onClick={this.nav.bind(this, 'code')}/>
+	<IconButton
+	  icon="fa-folder-open"
+	  active={this.state.mode == "lib"}
+	  onClick={this.nav.bind(this, 'lib')}/>
 	<IconButton
 	  icon="fa-question"
 	  active={this.state.mode == "manual"}

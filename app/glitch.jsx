@@ -102,6 +102,7 @@ export default class Glitch {
     var f = expr.parse(s, this.vars, FUNCS);
     if (f) {
       this.validInput = s;
+      window.location.hash = encodeURIComponent(s);
       if (this.player) {
         this.player = f;
       }
