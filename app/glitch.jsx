@@ -36,7 +36,8 @@ export default class Glitch {
 
     this.playing = false;
     this.vars = {'t': expr.varExpr(0), 'r': expr.varExpr(0)};
-    this.expr = expr.parse('', this.vars, FUNCS);
+    this.input = '';
+    this.expr = expr.parse(this.input, this.vars, FUNCS);
 
     window.AudioContext = window.AudioContext || window.webkitAudioContext;
     this.audio = new AudioContext();
@@ -102,6 +103,7 @@ export default class Glitch {
     this.playing = !this.playing;
   }
   setExpr(s) {
+    this.input = s;
     var e = expr.parse(s, this.vars, FUNCS);
     if (e) {
       this.error = undefined;
