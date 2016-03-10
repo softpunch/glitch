@@ -35,7 +35,7 @@ export default class App extends React.Component {
       content = <Manual />
     }
 
-    if (this.props.glitch.playing) {
+    if (this.props.glitch.player) {
       playButton = <IconButton
 	icon="fa-stop"
 	active="true"

@@ -32,12 +32,10 @@ var FUNCS = {
 
 export default class Glitch {
   constructor() {
+    console.log('constructor');
     var bufsz = 2*4096;
 
-    this.playing = false;
-    this.vars = {'t': expr.varExpr(0), 'r': expr.varExpr(0)};
-    this.input = '';
-    this.expr = expr.parse(this.input, this.vars, FUNCS);
+    this.compile('');
 
     window.AudioContext = window.AudioContext || window.webkitAudioContext;
     this.audio = new AudioContext();
@@ -62,16 +60,18 @@ export default class Glitch {
     this.pcmNode = this.audio.createScriptProcessor(bufsz, 0, 1);
     this.pcmNode.onaudioprocess = (e) => {
       var out = e.outputBuffer.getChannelData(0);
+      console.log('onaudioprocess', this.input, out.length);
       for (var i = 0; i < out.length; i++) {
-        var v = this.expr();
+        var v = this.player();
         out[i] = (v&0xff)/0x80 - 1;
         this.vars.r(this.vars.r()+1);
         this.vars.t(Math.round(this.vars.r()*this.sampleStep));
       }
+      console.log(out, this.vars.r(), this.vars.t());
     }
 
     this.delay = this.audio.createDelay(0.5);
-    this.delay.connect(this.analyser);
+    this.delay.connect(this.renderNode);
     this.delay.value = 0;
 
     this.lp = this.audio.createBiquadFilter();
@@ -88,28 +88,25 @@ export default class Glitch {
     this.hp.type = 'highshelf';
   }
   togglePlayback() {
-    if (this.playing) {
-      for (var v in this.vars) {
-        if (this.vars.hasOwnProperty(v)) {
-          delete this.vars[v];
-        }
-      }
-      this.vars.t = expr.varExpr(0);
-      this.vars.r = expr.varExpr(0);
+    if (this.player) {
+      this.player = undefined;
       this.pcmNode.disconnect();
     } else {
+      this.vars = {'t': expr.varExpr(0), 'r': expr.varExpr(0)};
+      this.player = expr.parse(this.validInput, this.vars, FUNCS);
       this.pcmNode.connect(this.hp);
     }
-    this.playing = !this.playing;
   }
-  setExpr(s) {
+  compile(s) {
     this.input = s;
-    var e = expr.parse(s, this.vars, FUNCS);
-    if (e) {
-      this.error = undefined;
-      this.expr = e;
+    var f = expr.parse(s, this.vars, FUNCS);
+    if (f) {
+      this.validInput = s;
+      if (this.player) {
+        this.player = f;
+      }
     } else {
-      this.error = true;
+      this.validInput = undefined;
     }
   }
 }

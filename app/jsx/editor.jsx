@@ -5,12 +5,12 @@ export default class Editor extends React.Component {
   constructor() {
     super();
     this.handleTextChange = (e) => {
-      this.props.glitch.setExpr(e.target.value);
+      this.props.glitch.compile(e.target.value);
       this.forceUpdate();
     };
   }
   componentDidMount() {
-    this.props.glitch.setExpr("(t*((3+(1^t>>10&5))*(5+(3&t>>14))))>>(t>>8&3)");
+    this.props.glitch.compile("(t*((3+(1^t>>10&5))*(5+(3&t>>14))))>>(t>>8&3)");
     this.forceUpdate();
   }
   render() {
