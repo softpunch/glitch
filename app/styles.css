@@ -2,6 +2,8 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+div, p, h1, h2, h3, h4, h5, h6 {
   color:#ffc107;
 }
 
@@ -44,7 +46,18 @@ textarea {
 textarea, .monospace {
   font-family: 'Roboto Mono', 'monospace';
 }
-
+.librarylink {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  color:#ffc107;
+}
+.librarylink:hover {
+  color: #333;
+  background-color: #ffc107;
+}
 /* Mobile */
 @media screen and (max-width: 800px), screen and (max-height: 500px) {
   #container {
