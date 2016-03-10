@@ -96,12 +96,23 @@ export default class Manual extends React.Component {
   componentWillUnmount() {
     window.removeEventListener('resize', this.onresize);
   }
+  handleClick(expr) {
+    this.props.glitch.compile(expr);
+    if (!this.props.glitch.player) {
+      this.props.glitch.togglePlayback();
+    }
+  }
   render() {
     var results = [];
     for (var i = 0; i < library.length; i++) {
-      results.push(<a className="librarylink" href={'#' + encodeURIComponent(library[i].f)} style={{
+      results.push(<a
+	onClick={this.handleClick.bind(this, library[i].f)}
+	className={"librarylink " + (this.props.glitch.input == library[i].f ? 'current' : '')}
+	style={{
 	  width: this.ellipsisWidth + 'px',
-	}}>&gt;&gt; {library[i].f}</a>)
+	}}>
+	&gt;&gt; {library[i].f}
+      </a>)
     }
     return <div ref="content" className="monospace" style={{
       overflowY:'auto',

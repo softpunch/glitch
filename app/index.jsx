@@ -18,11 +18,5 @@ try {
   console.log(e);
 }
 
-window.onhashchange = () => {
-  if (glitch) {
-    glitch.compile(decodeURIComponent(window.location.hash.substring(1)));
-  }
-};
-
 ReactDOM.render(<App glitch={glitch} />, document.getElementById('container'));
 

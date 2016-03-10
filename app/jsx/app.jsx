@@ -17,6 +17,14 @@ export default class App extends React.Component {
     this.props.glitch.togglePlayback();
     this.forceUpdate();
   }
+  componentDidMount() {
+    window.onhashchange = () => {
+      if (this.props.glitch) {
+	this.props.glitch.compile(decodeURIComponent(window.location.hash.substring(1)));
+      }
+      this.forceUpdate();
+    };
+  }
   render() {
     if (this.props.glitch) {
       return this.renderLayout();
@@ -33,7 +41,7 @@ export default class App extends React.Component {
     if (this.state.mode == 'code') {
       content = <Editor glitch={this.props.glitch} style={{flex: '1'}}/>
     } else if (this.state.mode == 'lib') {
-      content = <Library />
+      content = <Library glitch={this.props.glitch} />
     } else {
       content = <Manual />
     }

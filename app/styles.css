@@ -54,6 +54,9 @@ textarea, .monospace {
   text-overflow: ellipsis;
   color:#ffc107;
 }
+.librarylink.current {
+  color: #fff;
+}
 .librarylink:hover {
   color: #333;
   background-color: #ffc107;
