@@ -67,7 +67,7 @@ export default class App extends React.Component {
 	  {content}
 	</div>
       </div>
-      <div style={{width:'72px'}}>
+      <div style={{width:'72px', display: 'flex', flexDirection: 'column'}}>
 	{playButton}
 	<IconButton
 	  icon="fa-code"
@@ -77,15 +77,26 @@ export default class App extends React.Component {
 	  icon="fa-folder-open"
 	  active={this.state.mode == "lib"}
 	  onClick={this.nav.bind(this, 'lib')}/>
+	{
+	  // TODO: save wave file
+	  // TODO: live instrument input
+	}
 	<IconButton
 	  icon="fa-question"
 	  active={this.state.mode == "manual"}
 	  onClick={this.nav.bind(this, 'manual')}/>
-	{
-	  // TODO: library with examples
-	  // TODO: equalizer
-	  // TODO: live instrument input
-	}
+	<div style={{flex: '1'}}></div>
+	<a 
+	  style={{
+	    height: '72px', lineHeight: '72px', textAlign: 'center', cursor: 'pointer',
+	    fontSize: '20pt',
+	    color: '#03a9f4',
+	  }}
+	  href={
+	    "https://twitter.com/intent/tweet?" +
+	    "text=I made a bytebeat tune!&" +
+	      "hashtags=glitch&url="+encodeURIComponent(window.location.href)}>
+	      <i className="fa fa-bird"></i></a>
       </div>
     </div>
   }
