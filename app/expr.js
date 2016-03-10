@@ -266,7 +266,8 @@ function parse(s, vars, funcs) {
 	return
       }
       if (os.pop() == '{') {
-	var f = funcs[os.pop()];
+	var name = os.pop();
+	var f = funcs[name];
 	var e = es.pop();
 	var args = [];
 	while (e) {
@@ -278,7 +279,9 @@ function parse(s, vars, funcs) {
 	    break;
 	  }
 	}
-	es.push(function() { return f.apply(f, args);});
+	es.push((function(f, args){
+	  return function() {return f.apply(f, args);};
+	})(f, args));
       }
       parenNext = parenForbidden
     } else if (!isNaN(parseFloat(token))) {
