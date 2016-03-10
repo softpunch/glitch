@@ -1,5 +1,6 @@
 import './index.html';
 import 'font-awesome/css/font-awesome.css';
+import './styles.css';
 import './roboto.css';
 
 import React from 'react';

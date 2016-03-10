@@ -51,7 +51,7 @@ export default class App extends React.Component {
 	//color='#ff5722' />
     }
 
-    return <div style={{display: 'flex', flexDirection: 'row'}}>
+    return <div className="content" style={{display: 'flex', flexDirection: 'row'}}>
       <div style={{display: 'flex', flex: '1', flexDirection: 'column'}}>
 	<Header />
 	<div style={{flex: '1', display: 'flex'}}>
@@ -81,7 +81,7 @@ export default class App extends React.Component {
 class Header extends React.Component {
   render() {
     return <div style={{display: 'flex', flexDirection: 'row'}}>
-      <h1 style={{height: '72px', lineHeight:'72px', fontSize: '18pt'}}>
+      <h1 className="monospace" style={{height: '72px', lineHeight:'72px', fontSize: '18pt'}}>
 	#glitch
       </h1>
       <div style={{flex: '1'}}>

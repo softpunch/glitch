@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 
 export default class Manual extends React.Component {
   render() {
-    return <div className="manual" style={{flex: '1', overflow:'auto'}}>
+    return <div className="monospace" style={{flex: '1', overflow:'auto'}}>
       <p>Glitch is an algorithmic synthesizer - it makes music from math.</p>
       <br />
 
@@ -19,13 +19,10 @@ export default class Manual extends React.Component {
 
       <h4>### Operators ###</h4>
       <br/>
-      <p>- Basic arithmetics: + - * / % **</p>
+      <p>- Basic arithmetics: + - * / % ** ( )</p>
       <p>- Bitwise arithmetics: &lt;&lt; &gt;&gt; | &amp; ^</p>
       <p>- Logical operations: &lt; &gt; &lt;= &gt;= == != &amp;&amp; ||</p>
-      <p>- Variables: any letter or word becomes a variable. `t` is special, it's increased on each iteration while other variables are preserved. `=` can be used to assign values to variables.</p>
-      <p>- Grouping: ( and ) can be used to group expressions. `,` can be used to combine multiple expressions - the result is the result of the last expression, e.g. `a=6,b=a+1,a*b` returns 42.</p>
-      <br />
-
+      <p>- Any letter or word becomes a variable. `t` is special, it's increased on each iteration while other variables are preserved. `=` can be used to assign values to variables. `,` can be used to combine multiple expressions - the result is the result of the last expression, e.g. `a=6,b=a+1,a*b` returns 42.</p>
     </div>
   }
 }
