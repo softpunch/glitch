@@ -58,6 +58,9 @@ export default class Glitch {
 
     this.pcmNode = this.audio.createScriptProcessor(bufsz, 0, 1);
     this.pcmNode.onaudioprocess = (e) => {
+      if (!this.player) {
+        return;
+      }
       var out = e.outputBuffer.getChannelData(0);
       for (var i = 0; i < out.length; i++) {
         var v = this.player();

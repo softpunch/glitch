@@ -4,16 +4,12 @@ import ReactDOM from 'react-dom';
 export default class Visualizer extends React.Component {
   constructor() {
     super();
-    this.onresize = () => {
-      this.width = this.refs.root.offsetWidth;
-      this.forceUpdate();
-      this.draw();
-    }
+    this.onresize = this.forceUpdate().bind(this);
   }
   componentDidMount() {
     this.context = this.refs.canvas.getContext('2d');
     window.addEventListener('resize', this.onresize);
-    this.onresize();
+    this.draw();
   }
   componentWillUnmount() {
     window.removeEventListener('resize', this.onresize);
@@ -22,6 +18,8 @@ export default class Visualizer extends React.Component {
     requestAnimationFrame(this.draw.bind(this));
     var f = this.props.glitch.analyserFreq;
     var t = this.props.glitch.analyserTime;
+
+    this.width = this.refs.root.offsetWidth;
 
     var WIDTH = this.width * 0.95;
     var LEFT = this.width * 0.05;
@@ -64,8 +62,8 @@ export default class Visualizer extends React.Component {
     this.context.stroke();
   }
   render() {
-    return <div ref="root" style={{flex: '1'}}>
-      <canvas ref="canvas" width={this.width} height={72}/>
+    return <div ref="root" style={{flex: '1', position: 'relative'}}>
+      <canvas ref="canvas" width={this.width} height={72} style={{width: '100%', height: '72px'}}/>
     </div>
   }
 }

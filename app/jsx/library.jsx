@@ -2,6 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 //t*8+8*s(t/(15&(t>>11)))
+//(t*((3+(1^t>>10&5))*(5+(3&t>>14))))>>(t>>8&3*s(t/8))
+//((((t/800|10)*t)&85)-t)&(t/4)
 
 var library = [
   {f: 't', tags: []},
