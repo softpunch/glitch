@@ -9,7 +9,7 @@ var FUNCS = {
     }
   },
   'r': function() {
-    return Math.random();
+    return Math.random()*255;
   },
   'l': function(a) {
     if (a) {
@@ -19,13 +19,13 @@ var FUNCS = {
     }
   },
   'a': function() {
-    var len = arguments.length;
+    var len = arguments.length - 1;
     if (len < 2) {
       return 0;
     } else {
       var i = (Math.floor(arguments[0]()) + len) % len;
       i = (i + len) % len;
-      return arguments[i]();
+      return arguments[i+1]();
     }
   },
 }
