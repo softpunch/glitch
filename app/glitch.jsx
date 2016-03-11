@@ -34,8 +34,6 @@ export default class Glitch {
   constructor() {
     var bufsz = 2*4096;
 
-    this.compile('');
-
     window.AudioContext = window.AudioContext || window.webkitAudioContext;
     this.audio = new AudioContext();
     this.sampleRate = this.audio.sampleRate;

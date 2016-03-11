@@ -14,14 +14,18 @@ import App from './jsx/app.jsx';
 
 var glitch;
 
-try {
-  glitch = new Glitch();
-  if (!window.location.hash) {
-    glitch.compile("(t*((3+(1^t>>10&5))*(5+(3&t>>14))))>>(t>>8&3)");
+window.onload = function() {
+  try {
+    glitch = new Glitch();
+    console.log('hash is', window.location.hash);
+    if (window.location.hash) {
+      glitch.compile(decodeURIComponent(window.location.hash.substring(1)));
+    } else {
+      glitch.compile("(t*((3+(1^t>>10&5))*(5+(3&t>>14))))>>(t>>8&3)");
+    }
+  } catch(e) {
+    console.log(e);
   }
-} catch(e) {
-  console.log(e);
-}
 
-ReactDOM.render(<App glitch={glitch} />, document.getElementById('container'));
-
+  ReactDOM.render(<App glitch={glitch} />, document.getElementById('container'));
+};
