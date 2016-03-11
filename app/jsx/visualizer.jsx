@@ -4,7 +4,9 @@ import ReactDOM from 'react-dom';
 export default class Visualizer extends React.Component {
   constructor() {
     super();
-    this.onresize = this.forceUpdate().bind(this);
+    this.onresize = () => {
+      this.forceUpdate();
+    };
   }
   componentDidMount() {
     this.context = this.refs.canvas.getContext('2d');
