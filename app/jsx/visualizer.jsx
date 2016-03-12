@@ -53,7 +53,7 @@ export default class Visualizer extends React.Component {
     var sliceWidth = WIDTH * 1.0 / t.length;
     for(var i = 0; i < t.length; i++) {
       var value = t[i] / 256;
-      var y = FULL_HEIGHT/2 + (HEIGHT * (value-0.5));
+      var y = FULL_HEIGHT/2 - (HEIGHT * (value-0.5));
       if(i === 0) {
         this.context.moveTo(x, y);
       } else {
