@@ -161,7 +161,10 @@ export default class Glitch {
     a.href = url;
     a.download = 'glitch.wav';
     a.click();
-    window.URL.revokeObjectURL(url);
+    setTimeout(function() {
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    }, 100);
   }
 }
 
