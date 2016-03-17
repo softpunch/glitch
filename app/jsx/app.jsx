@@ -18,6 +18,9 @@ export default class App extends React.Component {
     this.props.glitch.togglePlayback();
     this.forceUpdate();
   }
+  save() {
+    this.props.glitch.save();
+  }
   componentDidMount() {
     window.onhashchange = () => {
       if (this.props.glitch) {
@@ -79,7 +82,6 @@ export default class App extends React.Component {
 	  active={this.state.mode == "lib"}
 	  onClick={this.nav.bind(this, 'lib')}/>
 	{
-	  // TODO: save wave file
 	  // TODO: live instrument input
 	}
 	<IconButton
@@ -87,6 +89,10 @@ export default class App extends React.Component {
 	  active={this.state.mode == "manual"}
 	  onClick={this.nav.bind(this, 'manual')}/>
 	<div style={{flex: '1'}}></div>
+	<IconButton
+	  icon="fa-floppy-o"
+	  active={true}
+	  onClick={this.save.bind(this)}/>
 	<a 
 	  style={{
 	    height: '72px', lineHeight: '72px', textAlign: 'center', cursor: 'pointer',
