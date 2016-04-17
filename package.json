@@ -16,9 +16,10 @@
     "es6-promise": "~3.1.2"
   },
   "dependencies": {
+    "expr": "github:naivesound/expr-js#1.0.1",
+    "font-awesome": "~4.5.0",
     "react": "~0.14.7",
     "react-dom": "~0.14.7",
-    "react-slider": "~0.6.1",
-    "font-awesome": "~4.5.0"
+    "react-slider": "~0.6.1"
   }
 }

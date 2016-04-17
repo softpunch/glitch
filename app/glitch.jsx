@@ -1,4 +1,4 @@
-import expr from './expr';
+import expr from 'expr';
 
 var FUNCS = {
   's': function(a) {
