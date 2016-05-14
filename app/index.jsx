@@ -9,7 +9,8 @@ import './roboto.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import Glitch from './glitch.jsx';
+import Glitch from './glitch.js';
+
 import App from './jsx/app.jsx';
 
 var glitch;
