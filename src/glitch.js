@@ -66,23 +66,6 @@ function Glitch() {
         this.vars.t(Math.round(this.vars.r()*this.sampleStep));
       }
     }.bind(this);
-
-    this.delay = this.audio.createDelay(0.5);
-    this.delay.connect(this.renderNode);
-    this.delay.value = 0;
-
-    this.lp = this.audio.createBiquadFilter();
-    this.lp.connect(this.delay);
-    this.lp.connect(this.analyser);
-    this.lp.frequency.value = 1000;
-    this.lp.gain.value = 0;
-    this.lp.type = 'lowshelf';
-
-    this.hp = this.audio.createBiquadFilter();
-    this.hp.connect(this.lp);
-    this.hp.frequency.value = 1000;
-    this.hp.gain.value = 0;
-    this.hp.type = 'highshelf';
 }
 
 Glitch.prototype.togglePlayback = function() {
