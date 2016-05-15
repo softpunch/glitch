@@ -3,7 +3,7 @@ var path = require('path');
 require('es6-promise').polyfill();
 
 var config = {
-  entry: path.resolve(__dirname, 'app/index.jsx'),
+  entry: path.resolve(__dirname, 'src/index.jsx'),
   output: {
     path: path.resolve(__dirname, 'build'),
     filename: 'bundle.js'
