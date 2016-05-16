@@ -30,6 +30,7 @@ const audioMiddleware = store => next => action => {
     case actions.STOP: audio.stop(); break;
     case actions.SET_EXPR:
       if (!glitch.compile(action.expr)) {
+        console.log('syntax error')
         store.dispatch(actions.error('syntax error'))
       } else {
         store.dispatch(actions.error())
@@ -69,6 +70,11 @@ if (window.location.hash) {
   store.dispatch(actions.setExpr(decodeURIComponent(window.location.hash.substring(1))))
 } else {
   store.dispatch(actions.setExpr(store.getState().expr.expr))
+}
+
+document.onmousemove = function(e) {
+  glitch.vars.x(e.pageX)
+  glitch.vars.y(e.pageY)
 }
 
 window.onload = function() {

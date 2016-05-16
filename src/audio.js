@@ -1,5 +1,5 @@
 const audioContext = new AudioContext()
-const AUDIO_BUFFER_SIZE = 512
+const AUDIO_BUFFER_SIZE = 4096
 
 export const sampleRate = audioContext.sampleRate
 

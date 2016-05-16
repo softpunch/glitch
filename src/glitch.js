@@ -9,7 +9,7 @@ export default class Glitch {
     this.reset()
   }
   reset() {
-    this.vars = {'t': expr.varExpr(0), 'r': expr.varExpr(0)};
+    this.vars = {'t': expr.varExpr(0), 'r': expr.varExpr(0), 'x': expr.varExpr(), 'y': expr.varExpr(0)};
     this.expr = expr.parse(this.src, this.vars, functions)
   }
   compile(e) {
