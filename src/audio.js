@@ -4,6 +4,7 @@ const AUDIO_BUFFER_SIZE = 4096
 export const sampleRate = audioContext.sampleRate
 
 const pcmNode = audioContext.createScriptProcessor(AUDIO_BUFFER_SIZE, 0, 1);
+
 export const analyser = audioContext.createAnalyser()
 
 analyser.fftSize = 2048;
