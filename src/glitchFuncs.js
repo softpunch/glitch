@@ -121,7 +121,7 @@ export function seq() {
     this.t++
     let bps = bpm / 60
     let beat = this.t * bps / sampleRate
-    if (beat == Math.floor(beat)) {
+    if (beat - Math.floor(beat) < 1/sampleRate) {
       return NaN
     }
     let len = arguments.length - 1
