@@ -73,7 +73,6 @@ export function hz(n) {
   return Math.pow(2, arg(n, 0)/12)*440
 }
 
-
 //
 // Sound synthesis
 //
