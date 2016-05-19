@@ -1,0 +1,20 @@
+{
+  "name": "glitch",
+  "productName": "Glitch",
+  "version": "1.0.0",
+  "description": "Algorithmic music synthesizer",
+  "main": "index.js",
+  "scripts": {
+    "start": "webpack --config ../webpack.config.js --output-path=build && electron index.js",
+    "pkg-linux": "electron-packager ./ --out=pkg --overwrite --platform=linux --arch=all",
+    "pkg-windows": "electron-packager ./ --out=pkg --overwrite --platform=win32 --arch=ia32",
+    "pkg-darwin": "electron-packager ./ --out=pkg --overwrite --platform=darwin --arch=x64",
+    "pkg": "npm run pkg-linux && npm run pkg-windows && npm run pkg-darwin"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "electron-packager": "^7.0.2",
+    "electron-prebuilt": "^1.1.0"
+  }
+}
