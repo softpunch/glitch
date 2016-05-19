@@ -16,6 +16,7 @@ const editorStyle = {
   outline: 'none',
   color: WHITE,
   backgroundColor: GRAY,
+  fontFamily: 'Roboto Mono, monospace',
   //whiteSpace: 'pre',
   //wordWrap: 'break-word',
 }

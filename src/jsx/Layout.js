@@ -54,7 +54,7 @@ export default class Layout extends React.Component {
   }
   render() {
     let app = <App />
-    if (this.state.width > 800 && this.state.height > 500) {
+    if (!window.navigator.appVersion.match(/Electron/) && this.state.width > 800 && this.state.height > 500) {
       app = <div style={flexColumStyle}>
 	<SocialIcons />
 	<div style={appContainerStyle}>{app}</div>
