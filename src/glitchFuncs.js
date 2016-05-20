@@ -80,7 +80,16 @@ function osc(oscillator, freq) {
   if (!freq) {
     oscillator.w = NaN
   } else {
-    oscillator.w = (oscillator.w || 0) + freq() / sampleRate
+    oscillator.nextfreq = freq()
+    if (!oscillator.freq) {
+      oscillator.freq = oscillator.nextfreq
+    }
+    oscillator.w = (oscillator.w || 0)
+    oscillator.w += oscillator.freq / sampleRate
+    if (oscillator.w > 1) {
+      oscillator.w = oscillator.w - Math.floor(oscillator.w)
+      oscillator.freq = oscillator.nextfreq
+    }
   }
   return oscillator.w
 }
@@ -166,7 +175,7 @@ export function env() {
     return NaN
   } else {
     this.t++;
-    return v * Math.max(1 - this.t/sampleRate*8, 0)
+    return (v - 127 ) * Math.max(1 - this.t/sampleRate*4, 0) + 127
   }
 }
 
