@@ -225,8 +225,15 @@ export function env() {
 // mixes signals and cuts amplitude to avoid overflows
 export function mix() {
   let v = 0
+  this.lastSamples = this.lastSamples || {}
   for (var i = 0; i < arguments.length; i++) {
-    v = v + (arguments[i]() - 128) / 256
+    let sample = arguments[i]()
+    if (isNaN(sample)) {
+      sample = this.lastSamples[i]
+    } else {
+      this.lastSamples[i] = sample
+    }
+    v = v + (sample - 128) / 256
   }
   if (arguments.length > 0) {
     v = v / Math.sqrt(arguments.length)
