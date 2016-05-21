@@ -70,3 +70,109 @@ describe('Glitch utils: nan()', function() {
   })
 })
 
+describe('Glitch utils: l()', function() {
+  it('l() returns log2', function() {
+    assert.equal(funcs.l(n(2)), 1)
+    assert.equal(funcs.l(n(4)), 2)
+    assert.equal(funcs.l(), 0)
+    assert(isNaN(funcs.l(n(NaN))))
+  })
+})
+
+describe('Glitch utils: hz()', function() {
+  it('hz() returns note frequency in hz', function() {
+    assert.equal(funcs.hz(n(0)), 440)
+    assert.equal(Math.round(funcs.hz(n(1))), 466)
+    assert.equal(funcs.hz(n(12)), 880)
+  })
+  it('hz() without arguments returns 400 hz', function() {
+    assert.equal(funcs.hz(), 440)
+  })
+  it('hz(NaN) returns NaN', function() {
+    assert(isNaN(funcs.hz(n(NaN))))
+  })
+})
+
+describe('Glitch utils: scale()', function() {
+  // TODO: write tests after all basic scales are added
+})
+
+describe('Glitch sequencer: a()', function() {
+  it('a() returns element from the list of arguments at given index', function() {
+    assert.equal(funcs.a(n(0), n(4), n(5), n(6)), 4)
+    assert.equal(funcs.a(n(1), n(4), n(5), n(6)), 5)
+    assert.equal(funcs.a(n(2), n(4), n(5), n(6)), 6)
+  })
+  it('a() positive index overflows', function() {
+    assert.equal(funcs.a(n(3), n(4), n(5), n(6)), 4)
+    assert.equal(funcs.a(n(4), n(4), n(5), n(6)), 5)
+    assert.equal(funcs.a(n(5), n(4), n(5), n(6)), 6)
+  })
+  it('a() floors floating point index', function() {
+    assert.equal(funcs.a(n(3.0), n(4), n(5), n(6)), 4)
+    assert.equal(funcs.a(n(3.1), n(4), n(5), n(6)), 4)
+    assert.equal(funcs.a(n(3.99), n(4), n(5), n(6)), 4)
+  })
+  it('a() negative index overflows', function() {
+    assert.equal(funcs.a(n(-3), n(4), n(5), n(6)), 4)
+    assert.equal(funcs.a(n(-2), n(4), n(5), n(6)), 5)
+    assert.equal(funcs.a(n(-1), n(4), n(5), n(6)), 6)
+    assert.equal(funcs.a(n(-100), n(4), n(5), n(6)), 6)
+  })
+  it('a() without arguments returns zero', function() {
+    assert.equal(funcs.a(), 0)
+  })
+  it('a() with no elements returns zero', function() {
+    assert.equal(funcs.a(n(0)), 0)
+    assert.equal(funcs.a(n(1000)), 0)
+    assert.equal(funcs.a(n(-1000)), 0)
+  })
+  it('a() can return NaN', function() {
+    let x = funcs.a(n(1), n(1), n(NaN), n(2))
+    assert(isNaN(funcs.a(n(1), n(1), n(NaN), n(2))))
+  })
+  it('a() returns NaN if index is NaN', function() {
+    assert(isNaN(funcs.a(n(NaN)), n(1), n(2), n(3)))
+    assert(isNaN(funcs.a(n(NaN))))
+  })
+})
+
+describe('Glitch sequencer: loop()', function() {
+
+})
+
+describe('Glitch sequencer: seq()', function() {
+
+})
+
+describe('Glitch sequencer: slide()', function() {
+
+})
+
+describe('Glitch instrument: sin()', function() {
+})
+
+describe('Glitch instrument: tri()', function() {
+})
+
+describe('Glitch instrument: saw()', function() {
+})
+
+describe('Glitch instrument: sqr()', function() {
+})
+
+describe('Glitch instrument: fm()', function() {
+})
+
+describe('Glitch effect: env()', function() {
+})
+
+describe('Glitch effect: am()', function() {
+})
+
+describe('Glitch effect: lpf()', function() {
+})
+
+describe('Glitch effect: hpf()', function() {
+})
+

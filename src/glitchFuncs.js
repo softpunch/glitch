@@ -33,14 +33,20 @@ export function l(a) {
 
 // Returns agument by its index, e.g. a(2, 4, 5, 6) returns 5 (the 2nd argument)
 export function a() {
-  var len = arguments.length - 1;
-  if (len < 2) {
+  if (arguments.length == 0) {
     return 0;
-  } else {
-    var i = (Math.floor(arguments[0]()) + len) % len;
-    i = (i + len) % len;
-    return arguments[i+1]();
   }
+  let i = arguments[0]()
+  if (isNaN(i)) {
+    return NaN
+  }
+  let len = arguments.length - 1;
+  if (len == 0) {
+    return 0
+  }
+  i = Math.floor(i + len) % len;
+  i = (i + len) % len;
+  return arguments[i+1]();
 }
 
 //
