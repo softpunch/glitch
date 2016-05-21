@@ -299,8 +299,42 @@ describe('Glitch effect: am()', function() {
 })
 
 describe('Glitch effect: lpf()', function() {
-})
-
-describe('Glitch effect: hpf()', function() {
+  it('modifies signal', function() {
+    let sin = funcs.sin.bind({})
+    let lpf = funcs.lpf.bind({})
+    let f = n(40)
+    let cutoff = n(10000)
+    let err = 0
+    for (let i = 0; i < 1000; i++) {
+      let signal = sin(f)
+      err = err + Math.abs(lpf(n(signal), cutoff) - signal)
+    }
+    assert(err > 0)
+  })
+  it('distorts signal depending on cutoff frequency', function() {
+    let sin = funcs.sin.bind({})
+    let lpf1 = funcs.lpf.bind({})
+    let lpf2 = funcs.lpf.bind({})
+    let f = n(120)
+    let cutoff1 = n(1000)
+    let cutoff2 = n(100)
+    let err1 = 0
+    let err2 = 0
+    for (let i = 0; i < 1000; i++) {
+      let signal = sin(f)
+      err1 = err1 + Math.abs(lpf1(n(signal), cutoff1) - signal)
+      err2 = err2 + Math.abs(lpf2(n(signal), cutoff2) - signal)
+    }
+    assert(err2 > err1)
+  })
+  it('mutes signal when cutoff frequency is zero', function() {
+    let sin = funcs.sin.bind({})
+    let lpf = funcs.lpf.bind({})
+    let f = n(440)
+    let cutoff = n(0)
+    for (let i = 0; i < 1000; i++) {
+      assert.equal(lpf(n(sin(f)), cutoff), 0)
+    }
+  })
 })
 
