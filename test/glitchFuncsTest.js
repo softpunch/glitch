@@ -10,12 +10,6 @@ function n(x) {
   }
 }
 
-function skipBeat(bpm, f) {
-  for (let i = 0; i < bpm / 60 * sampleRate; i++) {
-    f()
-  }
-}
-
 describe('Audio mock', function() {
   it('sample rate should be set to 44100', function() {
     assert.equal(sampleRate, 44100);
@@ -24,15 +18,15 @@ describe('Audio mock', function() {
 
 describe('Glitch utils: s()', function() {
   it('s() returns denormalized sine wave', function() {
-    assert.equal(funcs.s(n(0)), 127)
+    assert.equal(funcs.s(n(0)), 128)
     assert.equal(funcs.s(n(64)), 255)
-    assert.equal(Math.round(funcs.s(n(128))), 127)
-    assert.equal(Math.round(funcs.s(n(196))), 0)
+    assert.equal(Math.round(funcs.s(n(128))), 128)
+    assert.equal(Math.round(funcs.s(n(192))), 1)
   })
   it('s() is periodic', function() {
-    assert.equal(Math.round(funcs.s(n(256))), 127)
-    assert.equal(Math.round(funcs.s(n(512))), 127)
-    assert.equal(Math.round(funcs.s(n(1024))), 127)
+    assert.equal(Math.round(funcs.s(n(256))), 128)
+    assert.equal(Math.round(funcs.s(n(512))), 128)
+    assert.equal(Math.round(funcs.s(n(1024))), 128)
   })
   it('s() without args equals s(0)', function() {
     assert.equal(funcs.s(), funcs.s(n(0)))
@@ -195,7 +189,6 @@ describe('Glitch sequencer: slide()', function() {
     let slide = funcs.slide.bind({})
     let i = 0
     let incr = function() {
-      console.log('incr', i)
       return i++
     }
     let bpm = sampleRate * 60 / 4
@@ -212,15 +205,88 @@ describe('Glitch sequencer: slide()', function() {
 })
 
 describe('Glitch instrument: sin()', function() {
+  it('produces sine wave of the given frequency with amplitude 0..255', function() {
+    let sin = funcs.sin.bind({})
+    let freq = n(sampleRate/4)
+    let values = [128, 255, 128, 1, 128, 255, 128, 1]
+    for (let gain of values) {
+      let v = Math.round(sin(freq))
+      assert.equal(v, gain)
+    }
+  })
+  it('returns NaN when frequency is NaN', function() {
+    let sin = funcs.sin.bind({})
+    assert(isNaN(sin(n(NaN))))
+  })
+  it('applies frequency change on the next cycle', function() {
+    // TODO
+  })
 })
 
 describe('Glitch instrument: tri()', function() {
+  it('produces triangular wave of the given frequency with amplitude 0..255', function() {
+    let tri = funcs.tri.bind({})
+    let freq = n(sampleRate/4)
+    let values = [128, 255, 128, 1, 128, 255, 128, 1]
+    for (let gain of values) {
+      let v = Math.round(tri(freq))
+      assert.equal(v, gain)
+    }
+  })
+  it('returns NaN when frequency is NaN', function() {
+    let tri = funcs.tri.bind({})
+    assert(isNaN(tri(n(NaN))))
+  })
+  it('applies frequency change on the next cycle', function() {
+    // TODO
+  })
 })
 
 describe('Glitch instrument: saw()', function() {
+  it('produces sawtooth wave of the given frequency with amplitude 0..255', function() {
+    let saw = funcs.saw.bind({})
+    let freq = n(sampleRate/4)
+    let values = [128, 192, 1, 65, 128, 192, 1, 65]
+    for (let gain of values) {
+      let v = Math.round(saw(freq))
+      assert.equal(v, gain)
+    }
+  })
+  it('returns NaN when frequency is NaN', function() {
+    let saw = funcs.saw.bind({})
+    assert(isNaN(saw(n(NaN))))
+  })
+  it('applies frequency change on the next cycle', function() {
+    // TODO
+  })
 })
 
 describe('Glitch instrument: sqr()', function() {
+  it('produces square wave of the given frequency with amplitude 0..255', function() {
+    let sqr = funcs.sqr.bind({})
+    let freq = n(sampleRate/4)
+    let values = [255, 255, 1, 1, 255, 255, 1, 1]
+    for (let gain of values) {
+      let v = Math.round(sqr(freq))
+      assert.equal(v, gain)
+    }
+  })
+  it('produces square wave of custom width', function() {
+    let sqr = funcs.sqr.bind({})
+    let freq = n(sampleRate/4)
+    let values = [255, 255, 255, 1, 255, 255, 255, 1]
+    for (let gain of values) {
+      let v = Math.round(sqr(freq, n(0.75)))
+      assert.equal(v, gain)
+    }
+  })
+  it('returns NaN when frequency is NaN', function() {
+    let sqr = funcs.sqr.bind({})
+    assert(isNaN(sqr(n(NaN))))
+  })
+  it('applies frequency change on the next cycle', function() {
+    // TODO
+  })
 })
 
 describe('Glitch instrument: fm()', function() {

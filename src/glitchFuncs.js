@@ -1,7 +1,7 @@
 import {sampleRate} from './audio'
 
 function denorm(x) {
-  return x * 128 + 127
+  return x * 127 + 128
 }
 
 function arg(x, defaultValue) {
@@ -79,21 +79,20 @@ export function hz(n) {
 // Sound synthesis
 //
 function osc(oscillator, freq) {
-  if (!freq) {
-    oscillator.w = NaN
-  } else {
-    oscillator.nextfreq = freq()
-    if (!oscillator.freq) {
-      oscillator.freq = oscillator.nextfreq
-    }
-    oscillator.w = (oscillator.w || 0)
-    oscillator.w += oscillator.freq / sampleRate
-    if (oscillator.w > 1) {
-      oscillator.w = oscillator.w - Math.floor(oscillator.w)
-      oscillator.freq = oscillator.nextfreq
-    }
+  oscillator.nextfreq = arg(freq, NaN)
+  if (!oscillator.freq) {
+    oscillator.freq = oscillator.nextfreq
   }
-  return oscillator.w
+  let w = oscillator.w || 0
+  if (w > 1) {
+    w = w - Math.floor(w)
+    oscillator.freq = oscillator.nextfreq
+  }
+  oscillator.w = w + oscillator.freq / sampleRate
+  if (isNaN(oscillator.nextfreq)) {
+    return NaN
+  }
+  return w
 }
 
 // Can be used to reset oscillators and envelopes
@@ -111,12 +110,15 @@ export function saw(freq) {
 }
 
 export function tri(freq) {
-  let tau = osc(this, freq)
-	return denorm(1 - 4 * Math.abs(Math.round(tau) - tau))
+  let tau = osc(this, freq) + 0.25
+	return denorm(-1 + 4 * Math.abs(tau - Math.round(tau)))
 }
 
 export function sqr(freq, width) {
   let tau = osc(this, freq)
+  if (isNaN(tau)) {
+    return NaN
+  }
   tau = tau - Math.floor(tau)
 	return denorm(tau < arg(width, 0.5) ? 1 : -1)
 }

@@ -23,10 +23,12 @@ export default class Glitch {
   }
   nextSample() {
     var v = this.expr();
-    v = (v&0xff)/0x80 - 1;
+    if (!isNaN(v)) {
+      this.lastSample = (v&0xff)/0x80 - 1;
+    }
     this.vars.r(this.vars.r()+1);
     this.vars.t(Math.round(this.vars.r()* 8000 / this.sampleRate));
-    return v;
+    return this.lastSample;
   }
   onaudioprocess(e) {
     var buffer = e.outputBuffer.getChannelData(0);
