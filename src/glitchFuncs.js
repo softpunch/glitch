@@ -1,7 +1,7 @@
 import {sampleRate} from './audio'
 
 function denorm(x) {
-  return x * 127 + 128
+  return x * 128 + 127
 }
 
 function arg(x, defaultValue) {
@@ -14,11 +14,7 @@ function arg(x, defaultValue) {
 
 // Returns sine value, argument is wave phase 0..255, result is in the range 0..255
 export function s(a) {
-  if (a) {
-    return Math.sin(a()*Math.PI/128) * 127 + 128
-  } else {
-    return 0;
-  }
+  return denorm(Math.sin(arg(a, 0)*Math.PI/128))
 }
 
 // Returns random number in the range 0..max
@@ -119,6 +115,34 @@ export function sqr(freq, width) {
 	return denorm(tau < arg(width, 0.5) ? 1 : -1)
 }
 
+// FM synthesizer, modulators 1 and 2 are chained, modulator 3 is parallel
+export function fm(freq, mf1, mi1, mf2, mi2, mf3, mi3) {
+  if (!freq) {
+    return NaN
+  }
+  this.nextfreq = freq()
+  if (!this.freq) {
+    this.freq = this.nextfreq
+  }
+  this.w = (this.w || 0)
+  this.w += 1 / sampleRate
+  function modulate(tau, f) {
+    let a = arg(mi2, 0) * Math.sin(tau * (f * arg(mf2, 0)))
+    let b = arg(mi1, 0) * Math.sin(tau * (f * arg(mf1, 0) + a));
+    let c = arg(mi3, 0) * Math.sin(tau * (f * arg(mf3, 0)))
+    return Math.sin(tau * (f + c + b))
+  }
+
+  let tau = this.w * 2 * Math.PI
+  let f = this.freq
+  if (modulate(tau, this.freq) * modulate(tau + 1/sampleRate, this.freq) <= 0) {
+    //this.w = this.w - Math.floor(this.w)
+    this.freq = this.nextfreq
+  }
+	return denorm(modulate(tau, this.freq))
+}
+
+
 // Switches values at give tempo, NaN is returned when the switch happens
 export function seq() {
   this.t = this.t || 0
@@ -177,21 +201,6 @@ export function env() {
     this.t++;
     return (v - 127 ) * Math.max(1 - this.t/sampleRate*4, 0) + 127
   }
-}
-
-// FM synthesizer, modulators 1 and 2 are chained, modulator 3 is parallel
-export function fm(freq, mf1, mi1, mf2, mi2, mf3, mi3) {
-  this.w = (freq !== undefined ? ((this.w||0)+1/sampleRate) : 0)
-  let tau = this.w * 2 * Math.PI
-  let f = arg(freq, 0)
-  if (isNaN(f)) {
-    this.w = 0
-    return NaN
-  }
-  let a = arg(mi2, 0) * Math.sin(tau * (f * arg(mf2, 0)))
-  let b = arg(mi1, 0) * Math.sin(tau * (f * arg(mf1, 0) + a));
-  let c = arg(mi3, 0) * Math.sin(tau * (f * arg(mf3, 0)))
-	return denorm(Math.sin(tau * (f + c + b)))
 }
 
 // modulates signals by multiplying their values, also cuts amplitude to avoid
