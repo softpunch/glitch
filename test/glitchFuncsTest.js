@@ -10,6 +10,12 @@ function n(x) {
   }
 }
 
+function skipBeat(bpm, f) {
+  for (let i = 0; i < bpm / 60 * sampleRate; i++) {
+    f()
+  }
+}
+
 describe('Audio mock', function() {
   it('sample rate should be set to 44100', function() {
     assert.equal(sampleRate, 44100);
@@ -138,15 +144,71 @@ describe('Glitch sequencer: a()', function() {
 })
 
 describe('Glitch sequencer: loop()', function() {
-
+  it('produces NaN on each beat evaluating current step once per beat', function() {
+    let loop = funcs.loop.bind({})
+    let i = 0
+    let incr = function() {
+      return i++
+    }
+    let bpm = sampleRate * 60 / 4
+    assert(isNaN(loop(n(bpm), incr, n(2))), '1/4+0')
+    assert.equal(loop(n(bpm), incr, n(2)), 1, '2/4+0')
+    assert.equal(loop(n(bpm), incr, n(2)), 2, '3/4+0')
+    assert.equal(loop(n(bpm), incr, n(2)), 3, '4/4+0')
+    assert(isNaN(loop(n(bpm), incr, n(2))), '1/4+1')
+    assert.equal(loop(n(bpm), incr, n(2)), 2, '2/4+1')
+    assert.equal(loop(n(bpm), incr, n(2)), 2, '3/4+1')
+    assert.equal(loop(n(bpm), incr, n(2)), 2, '4/4+1')
+    assert(isNaN(loop(n(bpm), incr, n(2))), '1/4+2')
+    assert.equal(loop(n(bpm), incr, n(2)), 5, '2/4+2')
+    assert.equal(loop(n(bpm), incr, n(2)), 6, '3/4+2')
+    assert.equal(loop(n(bpm), incr, n(2)), 7, '4/4+2')
+    assert(isNaN(loop(n(bpm), incr, n(2))), '1/4+3')
+  })
 })
 
 describe('Glitch sequencer: seq()', function() {
-
+  it('produces NaN on each beat evaluating current step on each call', function() {
+    let seq = funcs.seq.bind({})
+    let i = 0
+    let incr = function() {
+      return i++
+    }
+    let bpm = sampleRate * 60 / 4
+    assert(isNaN(seq(n(bpm), incr, n(2))), '1/4+0')
+    assert.equal(seq(n(bpm), incr, n(2)), 0, '2/4+0')
+    assert.equal(seq(n(bpm), incr, n(2)), 0, '3/4+0')
+    assert.equal(seq(n(bpm), incr, n(2)), 0, '4/4+0')
+    assert(isNaN(seq(n(bpm), incr, n(2))), '1/4+1')
+    assert.equal(seq(n(bpm), incr, n(2)), 2, '2/4+1')
+    assert.equal(seq(n(bpm), incr, n(2)), 2, '3/4+1')
+    assert.equal(seq(n(bpm), incr, n(2)), 2, '4/4+1')
+    assert(isNaN(seq(n(bpm), incr, n(2))), '1/4+2')
+    assert.equal(seq(n(bpm), incr, n(2)), 1, '2/4+2')
+    assert.equal(seq(n(bpm), incr, n(2)), 1, '3/4+2')
+    assert.equal(seq(n(bpm), incr, n(2)), 1, '4/4+2')
+  })
 })
 
 describe('Glitch sequencer: slide()', function() {
-
+  it('produces NaN on each beat sliding step value from one to another', function() {
+    let slide = funcs.slide.bind({})
+    let i = 0
+    let incr = function() {
+      console.log('incr', i)
+      return i++
+    }
+    let bpm = sampleRate * 60 / 4
+    assert(isNaN(slide(n(bpm), incr, n(2))), '1/4+0')
+    assert.equal(slide(n(bpm), incr, n(2)), 0.5, '2/4+0')
+    assert.equal(slide(n(bpm), incr, n(2)), 1, '3/4+0')
+    assert.equal(slide(n(bpm), incr, n(2)), 1.5, '4/4+0')
+    assert(isNaN(slide(n(bpm), incr, n(2))), '1/4+1')
+    assert.equal(slide(n(bpm), incr, n(2)), 1.75, '2/4+1')
+    assert.equal(slide(n(bpm), incr, n(2)), 1.5, '3/4+1')
+    assert.equal(slide(n(bpm), incr, n(2)), 1.25, '4/4+1')
+    assert(isNaN(slide(n(bpm), incr, n(2))), '1/4+2')
+  })
 })
 
 describe('Glitch instrument: sin()', function() {

@@ -32,7 +32,7 @@ export function l(a) {
 }
 
 // Returns agument by its index, e.g. a(2, 4, 5, 6) returns 5 (the 2nd argument)
-export function a() {
+export function a(index) {
   if (arguments.length == 0) {
     return 0;
   }
@@ -150,49 +150,60 @@ export function fm(freq, mf1, mi1, mf2, mi2, mf3, mi3) {
 
 
 // Switches values at give tempo, NaN is returned when the switch happens
-export function seq() {
-  this.t = this.t || 0
-  let bpm = arg(arguments[0], NaN)
-  if (bpm == NaN) {
+function next(args, seq, f) {
+  let beatDuration = sampleRate / (arg(args[0], NaN) / 60)
+  if (beatDuration == NaN) {
     return NaN
-  } else if (arguments.length > 1) {
-    this.t++
-    let bps = bpm / 60
-    let beat = this.t * bps / sampleRate
-    if (beat - Math.floor(beat) < 1/sampleRate) {
-      return NaN
-    }
-    let len = arguments.length - 1
-    let i = (Math.floor(beat) + len) % len;
-    i = (i + len) % len;
-    return arguments[i+1]();
-  } else {
+  }
+  seq.t = (seq.t+1) || beatDuration
+  if (seq.t >= beatDuration) {
+    seq.t = 0
+    seq.beat = (seq.beat !== undefined ? seq.beat+1 : 0)
+  }
+  if (args.length == 0) {
     return 0
   }
+  let len = args.length - 1
+  let i = (Math.floor(seq.beat) + len) % len;
+  i = (i + len) % len;
+  return f(args, i, seq.t/beatDuration)
+}
+
+// Switches values evaluating the current value on each call
+export function loop() {
+  return next(arguments, this, (a, i, offset) => {
+    let res = a[i+1]()
+    return offset === 0 ? NaN : res
+  })
+}
+
+// Switches values evaluating them once per beat
+export function seq() {
+  return next(arguments, this, (a, i, offset) => {
+    if (offset === 0) {
+      this.value = a[i+1]()
+      return NaN
+    }
+    return this.value
+  })
 }
 
 // Slides from one value to another at given tempo, NaN is returned when the switch happens
 export function slide() {
-  this.t = this.t || 0
-  let bpm = arg(arguments[0], NaN)
-  if (bpm == NaN) {
-    return NaN
-  } else if (arguments.length > 1) {
-    this.t++
-    let bps = bpm / 60
-    let beat = this.t * bps / sampleRate
-    if (beat == Math.floor(beat)) {
+  let len = arguments.length - 1
+  return next(arguments, this, (a, i, offset) => {
+    if (offset === 0) {
+      let j = (i+1)%len
+      if (this.value === undefined) {
+        this.value = a[i+1]()
+      } else {
+        this.value = this.nextvalue
+      }
+      this.nextvalue = a[j+1]()
       return NaN
     }
-    let len = arguments.length - 1
-    let i = (Math.floor(beat) + len) % len;
-    i = (i + len) % len;
-    let a = arguments[i+1]();
-    let b = arguments[(i+1)%len + 1]();
-    return (b - a) * (beat - Math.floor(beat)) + a;
-  } else {
-    return 0
-  }
+    return (this.nextvalue - this.value) * (offset) + this.value;
+  })
 }
 
 // TODO
