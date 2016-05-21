@@ -235,9 +235,14 @@ export function am() {
 // Simple one pole IIR low-pass filter, can be used to construct high-pass and
 // all-pass filters as well (hpf=x-lpf(x), apf=hpf-lpf)
 export function lpf(x, fc) {
+  let cutoff = arg(fc, 200)
+  let value = arg(x, NaN)
+  if (isNaN(value) || isNaN(cutoff)) {
+    return NaN
+  }
   let wa = Math.tan(Math.PI * arg(fc, 200) / sampleRate);
   let a = wa / (1.0 + wa);
-  this.lpf = this.lpf || 0;
-  this.lpf = this.lpf + (arg(x, NaN) - this.lpf) * a;
+  this.lpf = this.lpf || 128;
+  this.lpf = this.lpf + (value - this.lpf) * a;
   return this.lpf;
 }
