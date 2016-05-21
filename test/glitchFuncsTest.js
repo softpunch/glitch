@@ -295,7 +295,26 @@ describe('Glitch instrument: fm()', function() {
 describe('Glitch effect: env()', function() {
 })
 
-describe('Glitch effect: am()', function() {
+describe('Glitch effect: mix()', function() {
+  it('sums up input values', function() {
+    let mix = funcs.mix.bind({})
+    assert.equal(mix(), 128)
+    assert.equal(mix(n(4)), 4)
+    assert.equal(mix(n(128), n(128), n(128)), 128)
+    assert.equal(Math.round(mix(n(200), n(100), n(32))), 98)
+  })
+  it('cuts amplitude to avoid overflow', function() {
+    let mix = funcs.mix.bind({})
+    assert.equal(Math.round(mix(n(1000), n(100000), n(10000))), 255)
+    assert.equal(Math.round(mix(n(-1000), n(-100000), n(-10000))), 1)
+  })
+  it('replaces NaN with last known sample value', function() {
+    let mix = funcs.mix.bind({})
+    assert.equal(mix(n(4)), 4)
+    assert.equal(mix(n(NaN)), 4)
+    assert.equal(mix(n(5)), 5)
+    assert.equal(mix(n(NaN)), 5)
+  })
 })
 
 describe('Glitch effect: lpf()', function() {

@@ -229,17 +229,17 @@ export function mix() {
   for (var i = 0; i < arguments.length; i++) {
     let sample = arguments[i]()
     if (isNaN(sample)) {
-      sample = this.lastSamples[i]
+      sample = this.lastSamples[i]||0
     } else {
       this.lastSamples[i] = sample
     }
-    v = v + (sample - 128) / 256
+    v = v + (sample - 128) / 127
   }
   if (arguments.length > 0) {
     v = v / Math.sqrt(arguments.length)
     return denorm(Math.max(Math.min(v, 1), -1))
   } else {
-    return 0
+    return 128
   }
 }
 
