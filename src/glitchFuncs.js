@@ -162,10 +162,10 @@ function next(args, seq, f) {
     seq.t = 0
     seq.beat = (seq.beat !== undefined ? seq.beat+1 : 0)
   }
-  if (args.length == 0) {
-    return 0
-  }
   let len = args.length - 1
+  if (len <= 0) {
+    return (seq.t === 0 ? NaN : 0)
+  }
   let i = (Math.floor(seq.beat) + len) % len;
   i = (i + len) % len;
   return f(args, i, seq.t/beatDuration)
@@ -222,14 +222,18 @@ export function env() {
   }
 }
 
-// modulates signals by multiplying their values, also cuts amplitude to avoid
-// overflows
-export function am() {
-  let v = 256
+// mixes signals and cuts amplitude to avoid overflows
+export function mix() {
+  let v = 0
   for (var i = 0; i < arguments.length; i++) {
-    v = v * arguments[i]() / 256
+    v = v + (arguments[i]() - 128) / 256
   }
-  return Math.max(Math.min(v, 255), 0)
+  if (arguments.length > 0) {
+    v = v / Math.sqrt(arguments.length)
+    return denorm(Math.max(Math.min(v, 1), -1))
+  } else {
+    return 0
+  }
 }
 
 // Simple one pole IIR low-pass filter, can be used to construct high-pass and

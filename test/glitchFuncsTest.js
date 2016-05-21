@@ -333,7 +333,7 @@ describe('Glitch effect: lpf()', function() {
     let f = n(440)
     let cutoff = n(0)
     for (let i = 0; i < 1000; i++) {
-      assert.equal(lpf(n(sin(f)), cutoff), 0)
+      assert.equal(lpf(n(sin(f)), cutoff), 128)
     }
   })
 })
