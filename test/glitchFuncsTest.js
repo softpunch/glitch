@@ -293,6 +293,58 @@ describe('Glitch instrument: fm()', function() {
 })
 
 describe('Glitch effect: env()', function() {
+  it('returns 128 if called without arguments', function() {
+    let env = funcs.env.bind({})
+    assert.equal(env(), 128)
+  })
+  it('returns unmodified signal if no envelope is given', function() {
+    let env = funcs.env.bind({})
+    assert.equal(env(n(213)), 213)
+    assert.equal(env(n(132)), 132)
+  })
+  it('default attack time is 0.0625', function() {
+    let env1 = funcs.env.bind({})
+    let env2 = funcs.env.bind({})
+    for (let i = 0; i < 1000; i++) {
+      assert.equal(env1(n(0.5), n(200)), env2(n(0.0625), n(0.5), n(200)))
+    }
+  })
+  it('handles odd number of variadic arguments', function() {
+    let env1 = funcs.env.bind({})
+    let env2 = funcs.env.bind({})
+    for (let i = 0; i < 1000; i++) {
+      let v1 = env1(n(10/sampleRate), n(100/sampleRate), n(200))
+      let v2 = env2(n(10/sampleRate), n(100/sampleRate), n(0), n(200))
+      if (isNaN(v1)) {
+        assert(isNaN(v2))
+        console.log('NaN at', i)
+      } else {
+        assert.equal(v1, v2)
+      }
+    }
+  })
+  it('handles custom envelope forms with variadic arguments', function() {
+    let env = funcs.env.bind({})
+    function customEnv() {
+      return env(n(100/sampleRate),
+                 n(100/sampleRate), n(0.1),
+                 n(100/sampleRate), n(0.8),
+                 n(100/sampleRate), n(0.5),
+                 n(200))
+    }
+    let v = 0
+    for (let seg = 0; seg < 4; seg++) {
+      for (let i = 0; i < 100; i++) {
+        let u = customEnv()
+        if (seg % 2 == 0) {
+          assert(Math.ceil(u) >= Math.floor(v))
+        } else {
+          assert(Math.floor(u) <= Math.ceil(v))
+        }
+        v = u
+      }
+    }
+  })
 })
 
 describe('Glitch effect: mix()', function() {

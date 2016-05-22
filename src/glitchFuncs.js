@@ -125,26 +125,25 @@ export function sqr(freq, width) {
 
 // FM synthesizer, modulators 1 and 2 are chained, modulator 3 is parallel
 export function fm(freq, mf1, mi1, mf2, mi2, mf3, mi3) {
-  if (!freq) {
-    return NaN
-  }
-  this.nextfreq = freq()
+  this.nextfreq = arg(freq, NaN)
   if (!this.freq) {
     this.freq = this.nextfreq
   }
   this.w = (this.w || 0)
   this.w += 1 / sampleRate
   function modulate(tau, f) {
-    let a = arg(mi2, 0) * Math.sin(tau * (f * arg(mf2, 0)))
-    let b = arg(mi1, 0) * Math.sin(tau * (f * arg(mf1, 0) + a));
-    let c = arg(mi3, 0) * Math.sin(tau * (f * arg(mf3, 0)))
-    return Math.sin(tau * (f + c + b))
+    let v3 = arg(mi3, 0) * Math.sin(tau * (f * arg(mf3, 0)))
+    let v2 = arg(mi2, 0) * Math.sin(tau * (f * arg(mf2, 0) + v3))
+    let v1 = arg(mi1, 0) * Math.sin(tau * (f * arg(mf1, 0) + v3));
+    return Math.sin(tau * (f + v1 + v2))
   }
-
+  if (isNaN(this.nextfreq)) {
+    return NaN
+  }
   let tau = this.w * 2 * Math.PI
   let f = this.freq
   if (modulate(tau, this.freq) * modulate(tau + 1/sampleRate, this.freq) <= 0) {
-    //this.w = this.w - Math.floor(this.w)
+    this.w = this.w - Math.floor(this.w)
     this.freq = this.nextfreq
   }
 	return denorm(modulate(tau, this.freq))
@@ -208,17 +207,57 @@ export function slide() {
   })
 }
 
-// TODO
+// env()             -> 0
+// env(x)            -> x
+// env(r, x)         -> percussive
+// env(a, r, x)      -> percussive
+// env(a, segmentDuration, segmentAmplitude, ...,  x)
 export function env() {
-  this.t = this.t || 0
+  // Zero arguments = zero signal level
+  // One argument = unmodied signal value
+  if (arguments.length < 2) {
+    return arg(arguments[0], 128)
+  }
   // Last argument is signal value
   let v = arg(arguments[arguments.length-1], NaN)
+  // Update envelope
+  this.e = this.e || []
+  this.d = this.d || []
+  this.segment = this.segment || 0
+  this.t = this.t || 0
+  if (arguments.length == 2) {
+    this.d[0] = 0.0625 * sampleRate
+    this.e[0] = 1
+    this.d[1] = arg(arguments[0], NaN) * sampleRate
+    this.e[1] = 0
+  } else {
+    this.d[0] = arg(arguments[0], NaN) * sampleRate
+    this.e[0] = 1
+    for (var i = 1; i < arguments.length - 1; i = i + 2) {
+      this.d[(i-1)/2+1] = arg(arguments[i], NaN) * sampleRate
+      if (i + 1 < arguments.length - 1) {
+        this.e[(i-1)/2+1] = arg(arguments[i+1], NaN)
+      } else {
+        this.e[(i-1)/2+1] = 0
+      }
+    }
+  }
   if (isNaN(v)) {
+    this.segment = 0
     this.t = 0
     return NaN
   } else {
     this.t++;
-    return (v - 127 ) * Math.max(1 - this.t/sampleRate*4, 0) + 127
+    if (this.t > this.d[this.segment]) {
+      this.t = 0
+      this.segment++
+    }
+    if (this.segment >= this.e.length) {
+      return 128 // end of envelope
+    }
+    let prevAmp = (this.segment == 0 ? 0 : this.e[this.segment-1])
+    let amp = this.e[this.segment]
+    return (v - 128) * (prevAmp + (amp - prevAmp) * (this.t / this.d[this.segment])) + 128
   }
 }
 
