@@ -53,15 +53,36 @@ export function a(index) {
 // Music theory helpers
 //
 const scales = [
-  //1, 2, 3, 4, 5, 6, 7
-  [0, 2, 4, 5, 7, 9, 11], // major
-  [0, 2, 3, 5, 7, 8, 10], // natural minor
-  // TODO: more scales
+  // 0..6 - classical modes
+  [0, 2, 4, 5, 7, 9, 11], // ionian, major scale
+  [0, 2, 3, 5, 7, 9, 10], // dorian
+  [0, 1, 3, 5, 7, 8, 10], // phrygian
+  [0, 2, 4, 6, 7, 9, 11], // lydian
+  [0, 2, 4, 5, 7, 9, 10], // mixolydian
+  [0, 2, 3, 5, 7, 8, 10], // aeolian, natural minor scale
+  [0, 1, 3, 5, 6, 8, 10], // locrian
+
+  // 7..8 - common minor variants
+  [0, 2, 3, 5, 7, 8, 11], // harmonic minor scale
+  [0, 2, 3, 5, 7, 9, 11], // melodic minor scale
+
+  // 9..13 - pentatonic and other scales
+  [0, 2, 4, 7, 9], // major pentatonic
+  [0, 3, 5, 7, 10], // minor pentatonic
+  [0, 3, 5, 6, 7, 10], // blues
+  [0, 2, 4, 6, 8, 10], // whole tone scale
+  [0, 1, 3, 4, 6, 7, 9, 10], // octatonic
+
+  // 14 and above - chromatic scale
+  [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], // chromatic is a fallback scale
 ]
 
 // Returns note value from the given scale
 export function scale(index, mode, key) {
-  let i = arg(mode, 0)
+  let i = Math.min(Math.floor(arg(mode, 0)), scales.length-1)
+  if (isNaN(i)) {
+    return NaN
+  }
   let len = scales[i].length
   let j = arg(index, 0)
   let transpose = Math.floor(j/len) * 12
