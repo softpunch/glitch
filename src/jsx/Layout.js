@@ -68,10 +68,9 @@ export default class Layout extends React.Component {
 class SocialIcons extends React.Component {
   render() {
     return <div style={headerStyle}>
-      <a href='http://twitter.com/'>tweet</a>&nbsp;~&nbsp;
-      <a href='http://twitter.com/'>like</a>&nbsp;~&nbsp;
-      <a href='http://twitter.com/'>plus</a>&nbsp;~&nbsp;
-      <a href='http://twitter.com/'>github</a>
+      <a href='http://naivesound.com/'>about</a>&nbsp;~&nbsp;
+      <a href='http://twitter.com/naive_sound'>follow</a>&nbsp;~&nbsp;
+      <a href='https://github.com/naivesound/glitch'>github</a>
     </div>
   }
 }
