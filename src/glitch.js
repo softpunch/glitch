@@ -24,7 +24,7 @@ export default class Glitch {
   nextSample() {
     var v = this.expr();
     if (!isNaN(v)) {
-      this.lastSample = (v&0xff)/0x80 - 1;
+      this.lastSample = (((v % 256) + 256) % 256) / 128 - 1;
     }
     this.vars.r(this.vars.r()+1);
     this.vars.t(Math.round(this.vars.r()* 8000 / this.sampleRate));
