@@ -18,7 +18,7 @@
     "webpack": "~1.12.14"
   },
   "dependencies": {
-    "expr": "github:naivesound/expr-js#1.0.2",
+    "expr": "github:naivesound/expr-js#1.0.3",
     "font-awesome": "~4.5.0",
     "react": "~0.14.7",
     "react-dom": "~0.14.7",

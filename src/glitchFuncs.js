@@ -13,40 +13,40 @@ function arg(x, defaultValue) {
 }
 
 // Returns sine value, argument is wave phase 0..255, result is in the range 0..255
-export function s(a) {
-  return denorm(Math.sin(arg(a, 0)*Math.PI/128))
+export function s(args) {
+  return denorm(Math.sin(arg(args[0], 0)*Math.PI/128))
 }
 
 // Returns random number in the range 0..max
-export function r(max) {
-  return Math.random()*arg(max, 255);
+export function r(args) {
+  return Math.random()*arg(args[0], 255);
 }
 
 // Returns log2 from the argument
-export function l(a) {
-  if (a) {
-    return Math.log2(a());
+export function l(args) {
+  if (args[0]) {
+    return Math.log2(args[0]());
   } else {
     return 0;
   }
 }
 
 // Returns agument by its index, e.g. a(2, 4, 5, 6) returns 5 (the 2nd argument)
-export function a(index) {
-  if (arguments.length == 0) {
+export function a(args) {
+  if (args.length == 0) {
     return 0;
   }
-  let i = arguments[0]()
+  let i = args[0]()
   if (isNaN(i)) {
     return NaN
   }
-  let len = arguments.length - 1;
+  let len = args.length - 1;
   if (len == 0) {
     return 0
   }
   i = Math.floor(i + len) % len;
   i = (i + len) % len;
-  return arguments[i+1]();
+  return args[i+1]();
 }
 
 //
@@ -92,8 +92,8 @@ export function scale(index, mode, key) {
 }
 
 // Returns frequency of the note
-export function hz(n) {
-  return Math.pow(2, arg(n, 0)/12)*440
+export function hz(args) {
+  return Math.pow(2, arg(args[0], 0)/12)*440
 }
 
 //
@@ -121,31 +121,38 @@ export function nan() {
   return NaN
 }
 
-export function sin(freq) {
-	return denorm(Math.sin(osc(this, freq) * 2 * Math.PI))
+export function sin(args) {
+	return denorm(Math.sin(osc(this, args[0]) * 2 * Math.PI))
 }
 
-export function saw(freq) {
-  let tau = osc(this, freq)
+export function saw(args) {
+  let tau = osc(this, args[0])
 	return denorm(2 * (tau - Math.round(tau)))
 }
 
-export function tri(freq) {
-  let tau = osc(this, freq) + 0.25
+export function tri(args) {
+  let tau = osc(this, args[0]) + 0.25
 	return denorm(-1 + 4 * Math.abs(tau - Math.round(tau)))
 }
 
-export function sqr(freq, width) {
-  let tau = osc(this, freq)
+export function sqr(args) {
+  let tau = osc(this, args[0])
   if (isNaN(tau)) {
     return NaN
   }
   tau = tau - Math.floor(tau)
-	return denorm(tau < arg(width, 0.5) ? 1 : -1)
+	return denorm(tau < arg(args[1], 0.5) ? 1 : -1)
 }
 
 // FM synthesizer, modulators 1 and 2 are chained, modulator 3 is parallel
-export function fm(freq, mf1, mi1, mf2, mi2, mf3, mi3) {
+export function fm(args) {
+  let freq = args[0]
+  let mf1 = args[1]
+  let mi1 = args[2]
+  let mf2 = args[3]
+  let mi2 = args[4]
+  let mf3 = args[5]
+  let mi3 = args[6]
   this.nextfreq = arg(freq, NaN)
   if (!this.freq) {
     this.freq = this.nextfreq
@@ -192,16 +199,16 @@ function next(args, seq, f) {
 }
 
 // Switches values evaluating the current value on each call
-export function loop() {
-  return next(arguments, this, (a, i, offset) => {
+export function loop(args) {
+  return next(args, this, (a, i, offset) => {
     let res = a[i+1]()
     return offset === 0 ? NaN : res
   })
 }
 
 // Switches values evaluating them once per beat
-export function seq() {
-  return next(arguments, this, (a, i, offset) => {
+export function seq(args) {
+  return next(args, this, (a, i, offset) => {
     if (offset === 0) {
       this.value = a[i+1]()
       return NaN
@@ -211,9 +218,9 @@ export function seq() {
 }
 
 // Slides from one value to another at given tempo, NaN is returned when the switch happens
-export function slide() {
-  let len = arguments.length - 1
-  return next(arguments, this, (a, i, offset) => {
+export function slide(args) {
+  let len = args.length - 1
+  return next(args, this, (a, i, offset) => {
     if (offset === 0) {
       let j = (i+1)%len
       if (this.value === undefined) {
@@ -233,31 +240,31 @@ export function slide() {
 // env(r, x)         -> percussive
 // env(a, r, x)      -> percussive
 // env(a, segmentDuration, segmentAmplitude, ...,  x)
-export function env() {
+export function env(args) {
   // Zero arguments = zero signal level
   // One argument = unmodied signal value
-  if (arguments.length < 2) {
-    return arg(arguments[0], 128)
+  if (args.length < 2) {
+    return arg(args[0], 128)
   }
   // Last argument is signal value
-  let v = arg(arguments[arguments.length-1], NaN)
+  let v = arg(args[args.length-1], NaN)
   // Update envelope
   this.e = this.e || []
   this.d = this.d || []
   this.segment = this.segment || 0
   this.t = this.t || 0
-  if (arguments.length == 2) {
+  if (args.length == 2) {
     this.d[0] = 0.0625 * sampleRate
     this.e[0] = 1
-    this.d[1] = arg(arguments[0], NaN) * sampleRate
+    this.d[1] = arg(args[0], NaN) * sampleRate
     this.e[1] = 0
   } else {
-    this.d[0] = arg(arguments[0], NaN) * sampleRate
+    this.d[0] = arg(args[0], NaN) * sampleRate
     this.e[0] = 1
-    for (var i = 1; i < arguments.length - 1; i = i + 2) {
-      this.d[(i-1)/2+1] = arg(arguments[i], NaN) * sampleRate
-      if (i + 1 < arguments.length - 1) {
-        this.e[(i-1)/2+1] = arg(arguments[i+1], NaN)
+    for (var i = 1; i < args.length - 1; i = i + 2) {
+      this.d[(i-1)/2+1] = arg(args[i], NaN) * sampleRate
+      if (i + 1 < args.length - 1) {
+        this.e[(i-1)/2+1] = arg(args[i+1], NaN)
       } else {
         this.e[(i-1)/2+1] = 0
       }
@@ -283,11 +290,11 @@ export function env() {
 }
 
 // mixes signals and cuts amplitude to avoid overflows
-export function mix() {
+export function mix(args) {
   let v = 0
   this.lastSamples = this.lastSamples || {}
-  for (var i = 0; i < arguments.length; i++) {
-    let sample = arguments[i]()
+  for (var i = 0; i < args.length; i++) {
+    let sample = args[i]()
     if (isNaN(sample)) {
       sample = this.lastSamples[i]||0
     } else {
@@ -295,8 +302,8 @@ export function mix() {
     }
     v = v + (sample - 128) / 127
   }
-  if (arguments.length > 0) {
-    v = v / Math.sqrt(arguments.length)
+  if (args.length > 0) {
+    v = v / Math.sqrt(args.length)
     return denorm(Math.max(Math.min(v, 1), -1))
   } else {
     return 128
@@ -305,7 +312,9 @@ export function mix() {
 
 // Simple one pole IIR low-pass filter, can be used to construct high-pass and
 // all-pass filters as well (hpf=x-lpf(x), apf=hpf-lpf)
-export function lpf(x, fc) {
+export function lpf(args) {
+  let x = args[0]
+  let fc = args[1]
   let cutoff = arg(fc, 200)
   let value = arg(x, NaN)
   if (isNaN(value) || isNaN(cutoff)) {

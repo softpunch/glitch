@@ -18,45 +18,45 @@ describe('Audio mock', function() {
 
 describe('Glitch utils: s()', function() {
   it('s() returns denormalized sine wave', function() {
-    assert.equal(funcs.s(n(0)), 128)
-    assert.equal(funcs.s(n(64)), 255)
-    assert.equal(Math.round(funcs.s(n(128))), 128)
-    assert.equal(Math.round(funcs.s(n(192))), 1)
+    assert.equal(funcs.s([n(0)]), 128)
+    assert.equal(funcs.s([n(64)]), 255)
+    assert.equal(Math.round(funcs.s([n(128)])), 128)
+    assert.equal(Math.round(funcs.s([n(192)])), 1)
   })
   it('s() is periodic', function() {
-    assert.equal(Math.round(funcs.s(n(256))), 128)
-    assert.equal(Math.round(funcs.s(n(512))), 128)
-    assert.equal(Math.round(funcs.s(n(1024))), 128)
+    assert.equal(Math.round(funcs.s([n(256)])), 128)
+    assert.equal(Math.round(funcs.s([n(512)])), 128)
+    assert.equal(Math.round(funcs.s([n(1024)])), 128)
   })
   it('s() without args equals s(0)', function() {
-    assert.equal(funcs.s(), funcs.s(n(0)))
+    assert.equal(funcs.s([]), funcs.s([n(0)]))
   })
   it('s(NaN) equals NaN', function() {
-    assert(isNaN(funcs.s(n(NaN))))
+    assert(isNaN(funcs.s([n(NaN)])))
   })
 })
 
 describe('Glitch utils: r()', function() {
   it('r() returns random numbers', function() {
-    let a = funcs.r()
-    let b = funcs.r()
+    let a = funcs.r([])
+    let b = funcs.r([])
     assert.notEqual(a, b)
   })
   it('r() returns random numbers in the given range', function() {
     for (let i = 1; i < 1000; i++) {
-      let r = funcs.r(n(i))
+      let r = funcs.r([n(i)])
       assert(r >= 0, 'r >= 0')
       assert(r < i, 'r < i')
     }
   })
   it('r(0) returns zero', function() {
-    assert.equal(funcs.r(n(0)), 0)
+    assert.equal(funcs.r([n(0)]), 0)
   })
   it('r(NaN) returns NaN', function() {
-    assert(isNaN(funcs.r(n(NaN))))
+    assert(isNaN(funcs.r([n(NaN)])))
   })
   it('r() without arguments returns random numbers in the range [0..255]', function() {
-    let r = funcs.r()
+    let r = funcs.r([])
     assert(r >= 0, 'r >= 0')
     assert(r < 255, 'r < 255')
   })
@@ -65,31 +65,31 @@ describe('Glitch utils: r()', function() {
 describe('Glitch utils: nan()', function() {
   it('nan() returns NaN', function() {
     assert(isNaN(funcs.nan()))
-    assert(isNaN(funcs.nan(n(0))))
-    assert(isNaN(funcs.nan(n(123))))
+    assert(isNaN(funcs.nan([n(0)])))
+    assert(isNaN(funcs.nan([n(123)])))
   })
 })
 
 describe('Glitch utils: l()', function() {
   it('l() returns log2', function() {
-    assert.equal(funcs.l(n(2)), 1)
-    assert.equal(funcs.l(n(4)), 2)
-    assert.equal(funcs.l(), 0)
-    assert(isNaN(funcs.l(n(NaN))))
+    assert.equal(funcs.l([n(2)]), 1)
+    assert.equal(funcs.l([n(4)]), 2)
+    assert.equal(funcs.l([]), 0)
+    assert(isNaN(funcs.l([n(NaN)])))
   })
 })
 
 describe('Glitch utils: hz()', function() {
   it('hz() returns note frequency in hz', function() {
-    assert.equal(funcs.hz(n(0)), 440)
-    assert.equal(Math.round(funcs.hz(n(1))), 466)
-    assert.equal(funcs.hz(n(12)), 880)
+    assert.equal(funcs.hz([n(0)]), 440)
+    assert.equal(Math.round(funcs.hz([n(1)])), 466)
+    assert.equal(funcs.hz([n(12)]), 880)
   })
   it('hz() without arguments returns 400 hz', function() {
-    assert.equal(funcs.hz(), 440)
+    assert.equal(funcs.hz([]), 440)
   })
   it('hz(NaN) returns NaN', function() {
-    assert(isNaN(funcs.hz(n(NaN))))
+    assert(isNaN(funcs.hz([n(NaN)])))
   })
 })
 
@@ -99,41 +99,41 @@ describe('Glitch utils: scale()', function() {
 
 describe('Glitch sequencer: a()', function() {
   it('a() returns element from the list of arguments at given index', function() {
-    assert.equal(funcs.a(n(0), n(4), n(5), n(6)), 4)
-    assert.equal(funcs.a(n(1), n(4), n(5), n(6)), 5)
-    assert.equal(funcs.a(n(2), n(4), n(5), n(6)), 6)
+    assert.equal(funcs.a([n(0), n(4), n(5), n(6)]), 4)
+    assert.equal(funcs.a([n(1), n(4), n(5), n(6)]), 5)
+    assert.equal(funcs.a([n(2), n(4), n(5), n(6)]), 6)
   })
   it('a() positive index overflows', function() {
-    assert.equal(funcs.a(n(3), n(4), n(5), n(6)), 4)
-    assert.equal(funcs.a(n(4), n(4), n(5), n(6)), 5)
-    assert.equal(funcs.a(n(5), n(4), n(5), n(6)), 6)
+    assert.equal(funcs.a([n(3), n(4), n(5), n(6)]), 4)
+    assert.equal(funcs.a([n(4), n(4), n(5), n(6)]), 5)
+    assert.equal(funcs.a([n(5), n(4), n(5), n(6)]), 6)
   })
   it('a() floors floating point index', function() {
-    assert.equal(funcs.a(n(3.0), n(4), n(5), n(6)), 4)
-    assert.equal(funcs.a(n(3.1), n(4), n(5), n(6)), 4)
-    assert.equal(funcs.a(n(3.99), n(4), n(5), n(6)), 4)
+    assert.equal(funcs.a([n(3.0), n(4), n(5), n(6)]), 4)
+    assert.equal(funcs.a([n(3.1), n(4), n(5), n(6)]), 4)
+    assert.equal(funcs.a([n(3.99), n(4), n(5), n(6)]), 4)
   })
   it('a() negative index overflows', function() {
-    assert.equal(funcs.a(n(-3), n(4), n(5), n(6)), 4)
-    assert.equal(funcs.a(n(-2), n(4), n(5), n(6)), 5)
-    assert.equal(funcs.a(n(-1), n(4), n(5), n(6)), 6)
-    assert.equal(funcs.a(n(-100), n(4), n(5), n(6)), 6)
+    assert.equal(funcs.a([n(-3), n(4), n(5), n(6)]), 4)
+    assert.equal(funcs.a([n(-2), n(4), n(5), n(6)]), 5)
+    assert.equal(funcs.a([n(-1), n(4), n(5), n(6)]), 6)
+    assert.equal(funcs.a([n(-100), n(4), n(5), n(6)]), 6)
   })
   it('a() without arguments returns zero', function() {
-    assert.equal(funcs.a(), 0)
+    assert.equal(funcs.a([]), 0)
   })
   it('a() with no elements returns zero', function() {
-    assert.equal(funcs.a(n(0)), 0)
-    assert.equal(funcs.a(n(1000)), 0)
-    assert.equal(funcs.a(n(-1000)), 0)
+    assert.equal(funcs.a([n(0)]), 0)
+    assert.equal(funcs.a([n(1000)]), 0)
+    assert.equal(funcs.a([n(-1000)]), 0)
   })
   it('a() can return NaN', function() {
-    let x = funcs.a(n(1), n(1), n(NaN), n(2))
-    assert(isNaN(funcs.a(n(1), n(1), n(NaN), n(2))))
+    let x = funcs.a([n(1), n(1), n(NaN), n(2)])
+    assert(isNaN(funcs.a([n(1), n(1), n(NaN), n(2)])))
   })
   it('a() returns NaN if index is NaN', function() {
-    assert(isNaN(funcs.a(n(NaN)), n(1), n(2), n(3)))
-    assert(isNaN(funcs.a(n(NaN))))
+    assert(isNaN(funcs.a([n(NaN), n(1), n(2), n(3)])))
+    assert(isNaN(funcs.a([n(NaN)])))
   })
 })
 
@@ -145,19 +145,19 @@ describe('Glitch sequencer: loop()', function() {
       return i++
     }
     let bpm = sampleRate * 60 / 4
-    assert(isNaN(loop(n(bpm), incr, n(2))), '1/4+0')
-    assert.equal(loop(n(bpm), incr, n(2)), 1, '2/4+0')
-    assert.equal(loop(n(bpm), incr, n(2)), 2, '3/4+0')
-    assert.equal(loop(n(bpm), incr, n(2)), 3, '4/4+0')
-    assert(isNaN(loop(n(bpm), incr, n(2))), '1/4+1')
-    assert.equal(loop(n(bpm), incr, n(2)), 2, '2/4+1')
-    assert.equal(loop(n(bpm), incr, n(2)), 2, '3/4+1')
-    assert.equal(loop(n(bpm), incr, n(2)), 2, '4/4+1')
-    assert(isNaN(loop(n(bpm), incr, n(2))), '1/4+2')
-    assert.equal(loop(n(bpm), incr, n(2)), 5, '2/4+2')
-    assert.equal(loop(n(bpm), incr, n(2)), 6, '3/4+2')
-    assert.equal(loop(n(bpm), incr, n(2)), 7, '4/4+2')
-    assert(isNaN(loop(n(bpm), incr, n(2))), '1/4+3')
+    assert(isNaN(loop([n(bpm), incr, n(2)])), '1/4+0')
+    assert.equal(loop([n(bpm), incr, n(2)]), 1, '2/4+0')
+    assert.equal(loop([n(bpm), incr, n(2)]), 2, '3/4+0')
+    assert.equal(loop([n(bpm), incr, n(2)]), 3, '4/4+0')
+    assert(isNaN(loop([n(bpm), incr, n(2)])), '1/4+1')
+    assert.equal(loop([n(bpm), incr, n(2)]), 2, '2/4+1')
+    assert.equal(loop([n(bpm), incr, n(2)]), 2, '3/4+1')
+    assert.equal(loop([n(bpm), incr, n(2)]), 2, '4/4+1')
+    assert(isNaN(loop([n(bpm), incr, n(2)])), '1/4+2')
+    assert.equal(loop([n(bpm), incr, n(2)]), 5, '2/4+2')
+    assert.equal(loop([n(bpm), incr, n(2)]), 6, '3/4+2')
+    assert.equal(loop([n(bpm), incr, n(2)]), 7, '4/4+2')
+    assert(isNaN(loop([n(bpm), incr, n(2)])), '1/4+3')
   })
 })
 
@@ -169,18 +169,18 @@ describe('Glitch sequencer: seq()', function() {
       return i++
     }
     let bpm = sampleRate * 60 / 4
-    assert(isNaN(seq(n(bpm), incr, n(2))), '1/4+0')
-    assert.equal(seq(n(bpm), incr, n(2)), 0, '2/4+0')
-    assert.equal(seq(n(bpm), incr, n(2)), 0, '3/4+0')
-    assert.equal(seq(n(bpm), incr, n(2)), 0, '4/4+0')
-    assert(isNaN(seq(n(bpm), incr, n(2))), '1/4+1')
-    assert.equal(seq(n(bpm), incr, n(2)), 2, '2/4+1')
-    assert.equal(seq(n(bpm), incr, n(2)), 2, '3/4+1')
-    assert.equal(seq(n(bpm), incr, n(2)), 2, '4/4+1')
-    assert(isNaN(seq(n(bpm), incr, n(2))), '1/4+2')
-    assert.equal(seq(n(bpm), incr, n(2)), 1, '2/4+2')
-    assert.equal(seq(n(bpm), incr, n(2)), 1, '3/4+2')
-    assert.equal(seq(n(bpm), incr, n(2)), 1, '4/4+2')
+    assert(isNaN(seq([n(bpm), incr, n(2)])), '1/4+0')
+    assert.equal(seq([n(bpm), incr, n(2)]), 0, '2/4+0')
+    assert.equal(seq([n(bpm), incr, n(2)]), 0, '3/4+0')
+    assert.equal(seq([n(bpm), incr, n(2)]), 0, '4/4+0')
+    assert(isNaN(seq([n(bpm), incr, n(2)])), '1/4+1')
+    assert.equal(seq([n(bpm), incr, n(2)]), 2, '2/4+1')
+    assert.equal(seq([n(bpm), incr, n(2)]), 2, '3/4+1')
+    assert.equal(seq([n(bpm), incr, n(2)]), 2, '4/4+1')
+    assert(isNaN(seq([n(bpm), incr, n(2)])), '1/4+2')
+    assert.equal(seq([n(bpm), incr, n(2)]), 1, '2/4+2')
+    assert.equal(seq([n(bpm), incr, n(2)]), 1, '3/4+2')
+    assert.equal(seq([n(bpm), incr, n(2)]), 1, '4/4+2')
   })
 })
 
@@ -192,15 +192,15 @@ describe('Glitch sequencer: slide()', function() {
       return i++
     }
     let bpm = sampleRate * 60 / 4
-    assert(isNaN(slide(n(bpm), incr, n(2))), '1/4+0')
-    assert.equal(slide(n(bpm), incr, n(2)), 0.5, '2/4+0')
-    assert.equal(slide(n(bpm), incr, n(2)), 1, '3/4+0')
-    assert.equal(slide(n(bpm), incr, n(2)), 1.5, '4/4+0')
-    assert(isNaN(slide(n(bpm), incr, n(2))), '1/4+1')
-    assert.equal(slide(n(bpm), incr, n(2)), 1.75, '2/4+1')
-    assert.equal(slide(n(bpm), incr, n(2)), 1.5, '3/4+1')
-    assert.equal(slide(n(bpm), incr, n(2)), 1.25, '4/4+1')
-    assert(isNaN(slide(n(bpm), incr, n(2))), '1/4+2')
+    assert(isNaN(slide([n(bpm), incr, n(2)])), '1/4+0')
+    assert.equal(slide([n(bpm), incr, n(2)]), 0.5, '2/4+0')
+    assert.equal(slide([n(bpm), incr, n(2)]), 1, '3/4+0')
+    assert.equal(slide([n(bpm), incr, n(2)]), 1.5, '4/4+0')
+    assert(isNaN(slide([n(bpm), incr, n(2)])), '1/4+1')
+    assert.equal(slide([n(bpm), incr, n(2)]), 1.75, '2/4+1')
+    assert.equal(slide([n(bpm), incr, n(2)]), 1.5, '3/4+1')
+    assert.equal(slide([n(bpm), incr, n(2)]), 1.25, '4/4+1')
+    assert(isNaN(slide([n(bpm), incr, n(2)])), '1/4+2')
   })
 })
 
@@ -210,13 +210,13 @@ describe('Glitch instrument: sin()', function() {
     let freq = n(sampleRate/4)
     let values = [128, 255, 128, 1, 128, 255, 128, 1]
     for (let gain of values) {
-      let v = Math.round(sin(freq))
+      let v = Math.round(sin([freq]))
       assert.equal(v, gain)
     }
   })
   it('returns NaN when frequency is NaN', function() {
     let sin = funcs.sin.bind({})
-    assert(isNaN(sin(n(NaN))))
+    assert(isNaN(sin([n(NaN)])))
   })
   it('applies frequency change on the next cycle', function() {
     // TODO
@@ -229,13 +229,13 @@ describe('Glitch instrument: tri()', function() {
     let freq = n(sampleRate/4)
     let values = [128, 255, 128, 1, 128, 255, 128, 1]
     for (let gain of values) {
-      let v = Math.round(tri(freq))
+      let v = Math.round(tri([freq]))
       assert.equal(v, gain)
     }
   })
   it('returns NaN when frequency is NaN', function() {
     let tri = funcs.tri.bind({})
-    assert(isNaN(tri(n(NaN))))
+    assert(isNaN(tri([n(NaN)])))
   })
   it('applies frequency change on the next cycle', function() {
     // TODO
@@ -248,13 +248,13 @@ describe('Glitch instrument: saw()', function() {
     let freq = n(sampleRate/4)
     let values = [128, 192, 1, 65, 128, 192, 1, 65]
     for (let gain of values) {
-      let v = Math.round(saw(freq))
+      let v = Math.round(saw([freq]))
       assert.equal(v, gain)
     }
   })
   it('returns NaN when frequency is NaN', function() {
     let saw = funcs.saw.bind({})
-    assert(isNaN(saw(n(NaN))))
+    assert(isNaN(saw([n(NaN)])))
   })
   it('applies frequency change on the next cycle', function() {
     // TODO
@@ -267,7 +267,7 @@ describe('Glitch instrument: sqr()', function() {
     let freq = n(sampleRate/4)
     let values = [255, 255, 1, 1, 255, 255, 1, 1]
     for (let gain of values) {
-      let v = Math.round(sqr(freq))
+      let v = Math.round(sqr([freq]))
       assert.equal(v, gain)
     }
   })
@@ -276,13 +276,13 @@ describe('Glitch instrument: sqr()', function() {
     let freq = n(sampleRate/4)
     let values = [255, 255, 255, 1, 255, 255, 255, 1]
     for (let gain of values) {
-      let v = Math.round(sqr(freq, n(0.75)))
+      let v = Math.round(sqr([freq, n(0.75)]))
       assert.equal(v, gain)
     }
   })
   it('returns NaN when frequency is NaN', function() {
     let sqr = funcs.sqr.bind({})
-    assert(isNaN(sqr(n(NaN))))
+    assert(isNaN(sqr([n(NaN)])))
   })
   it('applies frequency change on the next cycle', function() {
     // TODO
@@ -295,26 +295,26 @@ describe('Glitch instrument: fm()', function() {
 describe('Glitch effect: env()', function() {
   it('returns 128 if called without arguments', function() {
     let env = funcs.env.bind({})
-    assert.equal(env(), 128)
+    assert.equal(env([]), 128)
   })
   it('returns unmodified signal if no envelope is given', function() {
     let env = funcs.env.bind({})
-    assert.equal(env(n(213)), 213)
-    assert.equal(env(n(132)), 132)
+    assert.equal(env([n(213)]), 213)
+    assert.equal(env([n(132)]), 132)
   })
   it('default attack time is 0.0625', function() {
     let env1 = funcs.env.bind({})
     let env2 = funcs.env.bind({})
     for (let i = 0; i < 1000; i++) {
-      assert.equal(env1(n(0.5), n(200)), env2(n(0.0625), n(0.5), n(200)))
+      assert.equal(env1([n(0.5), n(200)]), env2([n(0.0625), n(0.5), n(200)]))
     }
   })
   it('handles odd number of variadic arguments', function() {
     let env1 = funcs.env.bind({})
     let env2 = funcs.env.bind({})
     for (let i = 0; i < 1000; i++) {
-      let v1 = env1(n(10/sampleRate), n(100/sampleRate), n(200))
-      let v2 = env2(n(10/sampleRate), n(100/sampleRate), n(0), n(200))
+      let v1 = env1([n(10/sampleRate), n(100/sampleRate), n(200)])
+      let v2 = env2([n(10/sampleRate), n(100/sampleRate), n(0), n(200)])
       if (isNaN(v1)) {
         assert(isNaN(v2))
         console.log('NaN at', i)
@@ -326,11 +326,11 @@ describe('Glitch effect: env()', function() {
   it('handles custom envelope forms with variadic arguments', function() {
     let env = funcs.env.bind({})
     function customEnv() {
-      return env(n(100/sampleRate),
+      return env([n(100/sampleRate),
                  n(100/sampleRate), n(0.1),
                  n(100/sampleRate), n(0.8),
                  n(100/sampleRate), n(0.5),
-                 n(200))
+                 n(200)])
     }
     let v = 0
     for (let seg = 0; seg < 4; seg++) {
@@ -350,22 +350,22 @@ describe('Glitch effect: env()', function() {
 describe('Glitch effect: mix()', function() {
   it('sums up input values', function() {
     let mix = funcs.mix.bind({})
-    assert.equal(mix(), 128)
-    assert.equal(mix(n(4)), 4)
-    assert.equal(mix(n(128), n(128), n(128)), 128)
-    assert.equal(Math.round(mix(n(200), n(100), n(32))), 98)
+    assert.equal(mix([]), 128)
+    assert.equal(mix([n(4)]), 4)
+    assert.equal(mix([n(128), n(128), n(128)]), 128)
+    assert.equal(Math.round(mix([n(200), n(100), n(32)])), 98)
   })
   it('cuts amplitude to avoid overflow', function() {
     let mix = funcs.mix.bind({})
-    assert.equal(Math.round(mix(n(1000), n(100000), n(10000))), 255)
-    assert.equal(Math.round(mix(n(-1000), n(-100000), n(-10000))), 1)
+    assert.equal(Math.round(mix([n(1000), n(100000), n(10000)])), 255)
+    assert.equal(Math.round(mix([n(-1000), n(-100000), n(-10000)])), 1)
   })
   it('replaces NaN with last known sample value', function() {
     let mix = funcs.mix.bind({})
-    assert.equal(mix(n(4)), 4)
-    assert.equal(mix(n(NaN)), 4)
-    assert.equal(mix(n(5)), 5)
-    assert.equal(mix(n(NaN)), 5)
+    assert.equal(mix([n(4)]), 4)
+    assert.equal(mix([n(NaN)]), 4)
+    assert.equal(mix([n(5)]), 5)
+    assert.equal(mix([n(NaN)]), 5)
   })
 })
 
@@ -377,8 +377,8 @@ describe('Glitch effect: lpf()', function() {
     let cutoff = n(10000)
     let err = 0
     for (let i = 0; i < 1000; i++) {
-      let signal = sin(f)
-      err = err + Math.abs(lpf(n(signal), cutoff) - signal)
+      let signal = sin([f])
+      err = err + Math.abs(lpf([n(signal), cutoff]) - signal)
     }
     assert(err > 0)
   })
@@ -392,9 +392,9 @@ describe('Glitch effect: lpf()', function() {
     let err1 = 0
     let err2 = 0
     for (let i = 0; i < 1000; i++) {
-      let signal = sin(f)
-      err1 = err1 + Math.abs(lpf1(n(signal), cutoff1) - signal)
-      err2 = err2 + Math.abs(lpf2(n(signal), cutoff2) - signal)
+      let signal = sin([f])
+      err1 = err1 + Math.abs(lpf1([n(signal), cutoff1]) - signal)
+      err2 = err2 + Math.abs(lpf2([n(signal), cutoff2]) - signal)
     }
     assert(err2 > err1)
   })
@@ -404,7 +404,7 @@ describe('Glitch effect: lpf()', function() {
     let f = n(440)
     let cutoff = n(0)
     for (let i = 0; i < 1000; i++) {
-      assert.equal(lpf(n(sin(f)), cutoff), 128)
+      assert.equal(lpf([n(sin([f])), cutoff]), 128)
     }
   })
 })
