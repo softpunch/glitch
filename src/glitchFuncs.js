@@ -78,13 +78,13 @@ const scales = [
 ]
 
 // Returns note value from the given scale
-export function scale(index, mode, key) {
-  let i = Math.min(Math.floor(arg(mode, 0)), scales.length-1)
+export function scale(args) {
+  let i = Math.min(Math.floor(arg(args[1], 0)), scales.length-1)
   if (isNaN(i)) {
     return NaN
   }
   let len = scales[i].length
-  let j = arg(index, 0)
+  let j = arg(args[0], 0)
   let transpose = Math.floor(j/len) * 12
   j = Math.floor(j + len) % len
   j = (j + len) % len
