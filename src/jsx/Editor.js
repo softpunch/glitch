@@ -25,8 +25,11 @@ class Editor extends React.Component {
   handleTextChange(e) {
     this.props.dispatch(setExpr(e.target.value));
   }
+  componentDidMount() {
+    ReactDOM.findDOMNode(this.refs.editor).focus();
+  }
   render() {
-    return <textarea
+    return <textarea ref="editor"
       value={this.props.expr.expr}
       onChange={this.handleTextChange.bind(this)}
       style={editorStyle} />
