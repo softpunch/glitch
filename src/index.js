@@ -13,7 +13,7 @@ import { Provider } from 'react-redux';
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 
 import Layout from './jsx/Layout'
-import { expr, playback, navigation } from './reducers'
+import { expr, playback, navigation, playbackMode } from './reducers'
 
 import * as actions from './actions'
 import * as audio from './audio'
@@ -76,6 +76,16 @@ document.onmousemove = function(e) {
   glitch.vars.x(e.pageX)
   glitch.vars.y(e.pageY)
 }
+
+document.onkeydown = function(e) {
+  if (e.keyCode == 13 && e.ctrlKey) {
+    if (store.getState().playback.mode == playbackMode.PLAYING) {
+      store.dispatch(actions.stop());
+    } else {
+      store.dispatch(actions.play());
+    }
+  }
+};
 
 window.onload = function() {
   ReactDOM.render(<Provider store={store}><Layout /></Provider>,
