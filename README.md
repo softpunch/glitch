@@ -1,6 +1,7 @@
 # Glitch
 
 [![Dependency Status](https://david-dm.org/naivesound/glitch.svg)](https://david-dm.org/naivesound/glitch)
+[![devDependency Status](https://david-dm.org/naivesound/glitch/dev-status.svg)](https://david-dm.org/naivesound/glitch#info=devDependencies)
 
 Glitch is a minimal synthesizer and composer for algorithmic music.
 
