@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 
 import { tab } from '../reducers'
 
-import {YELLOW, GRAY, WHITE} from '../colors'
+import {YELLOW, GRAY, WHITE, PINK} from '../colors'
 
 import Visualizer from './Visualizer'
 import Toolbar from './Toolbar'
@@ -34,18 +34,26 @@ const titleStyle = {
   fontWeight: 600,
 }
 
+const errorIconStyle = {
+  color: PINK,
+  fontSize: '20pt',
+  height: '72px',
+  width: '72px',
+  lineHeight: '72px',
+  textAlign: 'center',
+}
+
 const mainSectionStyle = {
   display: 'flex',
   flexDirection: 'column',
   flex: 1,
-  padding: '0 1em',
+  padding: '0 0 0 1em',
 }
 
 class App extends React.Component {
   render() {
-    console.log(this.props.navigation.tab);
     return <div style={appContainerStyle}>
-      <MainSection tab={this.props.navigation.tab}/>
+      <MainSection tab={this.props.navigation.tab} error={this.props.error} />
       <Toolbar />
     </div>
   }
@@ -60,7 +68,7 @@ class MainSection extends React.Component {
       case tab.HELP: content = <Help />; break
     }
     return <div style={mainSectionStyle}>
-      <Header />
+      <Header error={this.props.error} />
       {content}
     </div>
   }
@@ -71,6 +79,7 @@ class Header extends React.Component {
   render() {
     return <div style={headerStyle}>
       <Title />
+      <ErrorIcon error={this.props.error} />
       <Visualizer />
     </div>
   }
@@ -81,6 +90,13 @@ class Title extends React.Component {
     return <div style={titleStyle}>
       #glitch
     </div>
+  }
+}
+
+class ErrorIcon extends React.Component {
+  render() {
+    var visibility = {visibility: (this.props.error ? 'visible' : 'hidden')};
+    return <i className="fa fa-exclamation-triangle" style={Object.assign(errorIconStyle, visibility)}></i>
   }
 }
 
@@ -98,7 +114,7 @@ class IconButton extends React.Component {
 }
 
 function mapStateToProps(state) {
-  return {navigation: state.navigation}
+  return {navigation: state.navigation, error: state.expr.error}
 }
 
 export default connect(mapStateToProps)(App)

@@ -7,7 +7,6 @@ import {analyser} from '../audio'
 
 const wrapperStule = {
   flex: 1,
-  margin: '0 0 0 1em',
 }
 
 export default class Visualizer extends React.Component {
@@ -41,9 +40,9 @@ export default class Visualizer extends React.Component {
   }
   drawFFT(width, height) {
     analyser.getByteFrequencyData(this.f)
-    var x = width * 0.05;
+    var x = 0;
     var v = 0;
-    var sliceWidth = width * 1.0 / this.f.length;
+    var sliceWidth = width / this.f.length;
     for(var i = 0; i < this.f.length; i++) {
       if (i % 10 == 0) {
         var y = (v * height * 0.45);
@@ -57,11 +56,11 @@ export default class Visualizer extends React.Component {
   }
   drawWaveForm(width, height) {
     analyser.getByteTimeDomainData(this.t)
-    var x = width * 0.05;
+    var x = 0;
     this.context.beginPath();
     this.context.lineWidth = 2;
     this.context.strokeStyle = GREEN
-    var sliceWidth = width * 0.95 / this.t.length;
+    var sliceWidth = width / this.t.length;
     for(var i = 0; i < this.t.length; i++) {
       var value = this.t[i] / 256;
       var y = height * 0.5 - (height * 0.45 * (value-0.5));
