@@ -95,8 +95,8 @@ class Title extends React.Component {
 
 class ErrorIcon extends React.Component {
   render() {
-    var visibility = {visibility: (this.props.error ? 'visible' : 'hidden')};
-    return <i className="fa fa-exclamation-triangle" style={Object.assign(errorIconStyle, visibility)}></i>
+    var v = (this.props.error ? 'visible' : 'hidden');
+    return <i className="fa fa-exclamation-triangle" style={Object.assign(errorIconStyle, {visibility: v})}></i>
   }
 }
 

@@ -29,9 +29,9 @@ const audioMiddleware = store => next => action => {
     case actions.PLAY: glitch.reset(); audio.play(glitch.onaudioprocess.bind(glitch)); break;
     case actions.STOP: audio.stop(); break;
     case actions.SET_EXPR:
+      clearTimeout(audioMiddleware.errorTimeout)
       if (!glitch.compile(action.expr)) {
-        console.log('syntax error')
-        store.dispatch(actions.error('syntax error'))
+        audioMiddleware.errorTimeout = setTimeout(() => store.dispatch(actions.error('syntax error')), 500)
       } else {
         store.dispatch(actions.error())
       }
