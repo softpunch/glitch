@@ -180,8 +180,8 @@ export function fm(args) {
 
 // Switches values at give tempo, NaN is returned when the switch happens
 function next(args, seq, f) {
-  let beatDuration = sampleRate / (arg(args[0], NaN) / 60)
-  if (beatDuration == NaN) {
+  let beatDuration = sampleRate / (arg(args[0], NaN) / 60) * (seq.mul||1);
+  if (isNaN(beatDuration)) {
     return NaN
   }
   seq.t = (seq.t+1) || beatDuration
@@ -210,28 +210,34 @@ export function loop(args) {
 export function seq(args) {
   return next(args, this, (a, i, offset) => {
     if (offset === 0) {
-      this.value = a[i+1]()
-      return NaN
-    }
-    return this.value
-  })
-}
-
-// Slides from one value to another at given tempo, NaN is returned when the switch happens
-export function slide(args) {
-  let len = args.length - 1
-  return next(args, this, (a, i, offset) => {
-    if (offset === 0) {
-      let j = (i+1)%len
-      if (this.value === undefined) {
-        this.value = a[i+1]()
-      } else {
-        this.value = this.nextvalue
+      let arg = a[i+1]
+      this.mul = 1;
+      if (arg.car) {
+	this.mul = arg.car();
+	arg = arg.cdr;
+	if (arg.car) {
+	  let steps = [];
+	  while (arg.car) {
+	    steps.push(arg.car());
+	    arg = arg.cdr;
+	  }
+	  steps.push(arg());
+	  this.value = (delta) => {
+	    let n = steps.length-1;
+	    let i = Math.floor(n * delta)
+	    let from = steps[i];
+	    let to = steps[i+1];
+	    let k = (delta - i/n)*n;
+	    return from + (to - from) * k;
+	  }
+	  return NaN
+	}
       }
-      this.nextvalue = a[j+1]()
+      let val = arg();
+      this.value = () => val
       return NaN
     }
-    return (this.nextvalue - this.value) * (offset) + this.value;
+    return this.value(offset)
   })
 }
 
