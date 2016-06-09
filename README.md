@@ -1,5 +1,6 @@
 # Glitch
 
+[![Build Status](https://travis-ci.org/naivesound/glitch.svg?branch=master)](https://travis-ci.org/naivesound/glitch)
 [![Dependency Status](https://david-dm.org/naivesound/glitch.svg)](https://david-dm.org/naivesound/glitch)
 [![devDependency Status](https://david-dm.org/naivesound/glitch/dev-status.svg)](https://david-dm.org/naivesound/glitch#info=devDependencies)
 
