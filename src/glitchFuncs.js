@@ -114,11 +114,6 @@ function osc(oscillator, freq) {
   return w;
 }
 
-// Can be used to reset oscillators and envelopes
-export function nan() {
-  return NaN;
-}
-
 export function sin(args) {
   return denorm(Math.sin(osc(this, args[0]) * 2 * Math.PI));
 }
