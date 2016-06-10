@@ -4,7 +4,7 @@ node_js:
   - "4"
 after_success:
   - |
-    if test "$TRAVIS_TAG"
+    if test "$TRAVIS_TAG" ; then
       npm run build
       cd electron
       npm install
