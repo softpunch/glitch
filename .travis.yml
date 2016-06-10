@@ -5,17 +5,18 @@ node_js:
 after_success:
   - |
     if test "$TRAVIS_TAG" ; then
-      npm run build
-      cd electron
-      npm install
-      npm run build
-      npm run pkg
-      cd pkg
-      zip -r ../../glitch-linux-x64.zip Glitch-linux-x64
-      zip -r ../../glitch-linux-ia32.zip Glitch-linux-ia32
-      zip -r ../../glitch-windows-x64.zip Glitch-win32-x64
-      zip -r ../../glitch-windows-ia32.zip Glitch-win32-ia32
-      zip -r ../../glitch-macosx.zip Glitch-darwin-x64
+      npm run build &&
+      cd electron &&
+      npm install &&
+      npm run build &&
+      npm run pkg &&
+      cd pkg &&
+      zip -q -r ../../glitch-linux-x64.zip Glitch-linux-x64 &&
+      zip -q -r ../../glitch-linux-ia32.zip Glitch-linux-ia32 &&
+      zip -q -r ../../glitch-windows-x64.zip Glitch-win32-x64 &&
+      zip -q -r ../../glitch-windows-ia32.zip Glitch-win32-ia32 &&
+      zip -q -r ../../glitch-macosx.zip Glitch-darwin-x64 &&
+      cd ../..
     fi
 deploy:
   provider: releases
