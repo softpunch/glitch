@@ -1,11 +1,11 @@
-const audioContext = new AudioContext()
-const AUDIO_BUFFER_SIZE = 8192
+const audioContext = new AudioContext();
+const AUDIO_BUFFER_SIZE = 8192;
 
-export const sampleRate = audioContext.sampleRate
+export const sampleRate = audioContext.sampleRate;
 
 const pcmNode = audioContext.createScriptProcessor(AUDIO_BUFFER_SIZE, 0, 1);
 
-export const analyser = audioContext.createAnalyser()
+export const analyser = audioContext.createAnalyser();
 
 analyser.fftSize = 2048;
 analyser.smoothingTimeConstant = 0;

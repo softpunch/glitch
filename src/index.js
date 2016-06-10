@@ -12,16 +12,24 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 
-import Layout from './jsx/Layout'
-import { expr, playback, navigation, playbackMode } from './reducers'
+import Layout from './jsx/Layout';
+import { expr, playback, navigation, playbackMode } from './reducers';
 
-import * as actions from './actions'
-import * as audio from './audio'
-import {saveFile, waveFile} from './save'
+import * as actions from './actions';
+import * as audio from './audio';
+import { saveFile, waveFile } from './save';
 
-import Glitch from './glitch'
+import Glitch from './glitch';
 
-const glitch = new Glitch(audio.sampleRate)
+const glitch = new Glitch(audio.sampleRate);
+
+function exportWavFile(sampleRate, expression) {
+  const glitchRenderer = new Glitch(sampleRate);
+  glitchRenderer.compile(expression);
+  saveFile('glitch.wav',
+           waveFile(30, sampleRate, glitchRenderer.nextSample.bind(glitchRenderer)),
+           'audio/wav');
+}
 
 // Calls audio service on PLAY and STOP actions
 const audioMiddleware = store => next => action => {
@@ -29,32 +37,30 @@ const audioMiddleware = store => next => action => {
     case actions.PLAY: glitch.reset(); audio.play(glitch.onaudioprocess.bind(glitch)); break;
     case actions.STOP: audio.stop(); break;
     case actions.SET_EXPR:
-      clearTimeout(audioMiddleware.errorTimeout)
+      clearTimeout(audioMiddleware.errorTimeout);
       if (!glitch.compile(action.expr)) {
-        audioMiddleware.errorTimeout = setTimeout(() => store.dispatch(actions.error('syntax error')), 500)
+        audioMiddleware.errorTimeout = setTimeout(() =>
+          store.dispatch(actions.error('syntax error')), 500);
       } else {
-        store.dispatch(actions.error())
+        store.dispatch(actions.error());
       }
       break;
     case actions.EXPORT_WAV:
-      let glitchRenderer = new Glitch(audio.sampleRate)
-      glitchRenderer.compile(store.getState().expr.expr)
-      saveFile('glitch.wav',
-               waveFile(30, audio.sampleRate, glitchRenderer.nextSample.bind(glitchRenderer)),
-               'audio/wav')
+      exportWavFile(audio.sampleRate, store.getState().expr.expr);
       break;
+    default:
   }
-  return next(action)
-}
+  return next(action);
+};
 
 // Changes location URI hash whenever expression is changed
 const uriMiddleware = store => next => action => {
-  let res = next(action)
+  const res = next(action);
   if (!store.getState().expr.error) {
-    window.location.hash = encodeURIComponent(store.getState().expr.expr)
+    window.location.hash = encodeURIComponent(store.getState().expr.expr);
   }
   return res;
-}
+};
 
 const store = createStore(combineReducers({
   expr,
@@ -67,19 +73,19 @@ const store = createStore(combineReducers({
 
 // Initialize glitch with default/current expression
 if (window.location.hash) {
-  store.dispatch(actions.setExpr(decodeURIComponent(window.location.hash.substring(1))))
+  store.dispatch(actions.setExpr(decodeURIComponent(window.location.hash.substring(1))));
 } else {
-  store.dispatch(actions.setExpr(store.getState().expr.expr))
+  store.dispatch(actions.setExpr(store.getState().expr.expr));
 }
 
-document.onmousemove = function(e) {
-  glitch.vars.x(e.pageX)
-  glitch.vars.y(e.pageY)
-}
+document.onmousemove = (e) => {
+  glitch.vars.x(e.pageX);
+  glitch.vars.y(e.pageY);
+};
 
-document.onkeydown = function(e) {
-  if (e.keyCode == 13 && e.ctrlKey) {
-    if (store.getState().playback.mode == playbackMode.PLAYING) {
+document.onkeydown = (e) => {
+  if (e.keyCode === 13 && e.ctrlKey) {
+    if (store.getState().playback.mode === playbackMode.PLAYING) {
       store.dispatch(actions.stop());
     } else {
       store.dispatch(actions.play());
@@ -87,7 +93,7 @@ document.onkeydown = function(e) {
   }
 };
 
-window.onload = function() {
+window.onload = () => {
   ReactDOM.render(<Provider store={store}><Layout /></Provider>,
                   document.getElementById('container'));
-}
+};

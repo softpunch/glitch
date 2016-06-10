@@ -1,18 +1,17 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
+import React from 'react';
 
-import { connect } from 'react-redux'
+import { connect } from 'react-redux';
 
-import { playbackMode, tab } from '../reducers'
-import { navigate, play, stop, exportWav } from '../actions'
+import { playbackMode, tab } from '../reducers';
+import { navigate, play, stop, exportWav } from '../actions';
 
-import {YELLOW, GRAY, WHITE} from '../colors'
+import { YELLOW } from '../colors';
 
 const toolbarStyle = {
   display: 'flex',
   flexDirection: 'column',
   width: '72px',
-}
+};
 
 const iconButtonStyle = {
   color: YELLOW,
@@ -21,57 +20,76 @@ const iconButtonStyle = {
   textAlign: 'center',
   cursor: 'pointer',
   fontSize: '20pt',
-}
+};
 
-class Toolbar extends React.Component {
-  render() {
-    console.log(this.props);
-    return <div style={toolbarStyle}>
-      <PlayButton mode={this.props.playback.mode} dispatch={this.props.dispatch} />
-      <IconButton icon="fa-code"
-	active={this.props.navigation.tab == tab.EDITOR}
-	onClick={this.props.dispatch.bind(this, navigate(tab.EDITOR))} />
-      <IconButton icon="fa-folder-open"
-	active={this.props.navigation.tab == tab.LIBRARY}
-	onClick={this.props.dispatch.bind(this, navigate(tab.LIBRARY))} />
-      <IconButton icon="fa-question"
-	active={this.props.navigation.tab == tab.HELP}
-	onClick={this.props.dispatch.bind(this, navigate(tab.HELP))} />
-      <div style={{flex: 1}}></div>
-      <IconButton icon="fa-floppy-o"
-	active={true}
-	onClick={this.props.dispatch.bind(this, exportWav())} />
-    </div>
+function Toolbar(props) {
+  return (<div style={toolbarStyle}>
+    <PlayButton mode={props.mode} dispatch={props.dispatch} />
+    <IconButton
+      icon="fa-code"
+      active={props.tab === tab.EDITOR}
+      onClick={() => props.dispatch(navigate(tab.EDITOR))}
+    />
+    <IconButton
+      icon="fa-folder-open"
+      active={props.tab === tab.LIBRARY}
+      onClick={() => props.dispatch(navigate(tab.LIBRARY))}
+    />
+    <IconButton
+      icon="fa-question"
+      active={props.tab === tab.HELP}
+      onClick={() => props.dispatch(navigate(tab.HELP))}
+    />
+    <div style={{ flex: 1 }}></div>
+    <IconButton
+      icon="fa-floppy-o"
+      active
+      onClick={() => props.dispatch(exportWav())}
+    />
+  </div>);
+}
+Toolbar.propTypes = {
+  dispatch: React.PropTypes.func.isRequired,
+  tab: React.PropTypes.string.isRequired,
+  mode: React.PropTypes.string.isRequired,
+};
+
+function PlayButton(props) {
+  if (props.mode === playbackMode.STOPPED) {
+    return (<IconButton
+      icon="fa-play"
+      active
+      onClick={() => props.dispatch(play())}
+    />);
+  } else if (props.mode === playbackMode.PLAYING) {
+    return (<IconButton
+      icon="fa-stop"
+      active
+      onClick={() => props.dispatch(stop())}
+    />);
   }
 }
+PlayButton.propTypes = {
+  dispatch: React.PropTypes.func.isRequired,
+  mode: React.PropTypes.string.isRequired,
+};
 
-class PlayButton extends React.Component {
-  render() {
-    console.log(this.props);
-    if (this.props.mode == playbackMode.STOPPED) {
-      return <IconButton icon="fa-play" active="true"
-	onClick={this.props.dispatch.bind(this, play())} />
-    } else if (this.props.mode == playbackMode.PLAYING) {
-      return <IconButton icon="fa-stop" active="true"
-	onClick={this.props.dispatch.bind(this, stop())} />
-    }
-  }
+function IconButton(props) {
+  const opacity = props.active ? 1 : 0.4;
+  const style = Object.assign({}, iconButtonStyle, { opacity });
+  return (<div {...props} style={style}>
+    <i className={`fa ${props.icon}`} style={{ color: props.color }}></i>
+  </div>);
 }
-
-class IconButton extends React.Component {
-  render() {
-    return <div {...this.props}
-      style={Object.assign({}, iconButtonStyle, {
-	opacity: (this.props.active ? '1' : '0.4'),
-      })}>
-      <i className={"fa " + this.props.icon} style={{color: this.props.color}}></i>
-    </div>
-  }
-}
+IconButton.propTypes = {
+  active: React.PropTypes.bool.isRequired,
+  icon: React.PropTypes.string.isRequired,
+  color: React.PropTypes.string,
+};
 
 function mapStateToProps(state) {
-  return {navigation: state.navigation, playback: state.playback}
+  return { tab: state.navigation.tab, mode: state.playback.mode };
 }
 
-export default connect(mapStateToProps)(Toolbar)
+export default connect(mapStateToProps)(Toolbar);
 

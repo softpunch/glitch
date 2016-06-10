@@ -1,52 +1,50 @@
-import {sampleRate} from './audio'
+import { sampleRate } from './audio';
 
 function denorm(x) {
-  return x * 127 + 128
+  return x * 127 + 128;
 }
 
 function arg(x, defaultValue) {
   if (!x) {
     return defaultValue;
-  } else {
-    return x();
   }
+  return x();
 }
 
 // Returns sine value, argument is wave phase 0..255, result is in the range 0..255
 export function s(args) {
-  return denorm(Math.sin(arg(args[0], 0)*Math.PI/128))
+  return denorm(Math.sin(arg(args[0], 0) * Math.PI / 128));
 }
 
 // Returns random number in the range 0..max
 export function r(args) {
-  return Math.random()*arg(args[0], 255);
+  return Math.random() * arg(args[0], 255);
 }
 
 // Returns log2 from the argument
 export function l(args) {
   if (args[0]) {
     return Math.log2(args[0]());
-  } else {
-    return 0;
   }
+  return 0;
 }
 
 // Returns agument by its index, e.g. a(2, 4, 5, 6) returns 5 (the 2nd argument)
 export function a(args) {
-  if (args.length == 0) {
+  if (args.length === 0) {
     return 0;
   }
-  let i = args[0]()
+  let i = args[0]();
   if (isNaN(i)) {
-    return NaN
+    return NaN;
   }
-  let len = args.length - 1;
-  if (len == 0) {
-    return 0
+  const len = args.length - 1;
+  if (len === 0) {
+    return 0;
   }
   i = Math.floor(i + len) % len;
   i = (i + len) % len;
-  return args[i+1]();
+  return args[i + 1]();
 }
 
 //
@@ -75,170 +73,169 @@ const scales = [
 
   // 14 and above - chromatic scale
   [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], // chromatic is a fallback scale
-]
+];
 
 // Returns note value from the given scale
 export function scale(args) {
-  let i = Math.min(Math.floor(arg(args[1], 0)), scales.length-1)
+  const i = Math.min(Math.floor(arg(args[1], 0)), scales.length - 1);
   if (isNaN(i)) {
-    return NaN
+    return NaN;
   }
-  let len = scales[i].length
-  let j = arg(args[0], 0)
-  let transpose = Math.floor(j/len) * 12
-  j = Math.floor(j + len) % len
-  j = (j + len) % len
-  return scales[i][j] + transpose
+  const len = scales[i].length;
+  let j = arg(args[0], 0);
+  const transpose = Math.floor(j / len) * 12;
+  j = Math.floor(j + len) % len;
+  j = (j + len) % len;
+  return scales[i][j] + transpose;
 }
 
 // Returns frequency of the note
 export function hz(args) {
-  return Math.pow(2, arg(args[0], 0)/12)*440
+  return Math.pow(2, arg(args[0], 0) / 12) * 440;
 }
 
 //
 // Sound synthesis
 //
 function osc(oscillator, freq) {
-  oscillator.nextfreq = arg(freq, NaN)
+  oscillator.nextfreq = arg(freq, NaN);
   if (!oscillator.freq) {
-    oscillator.freq = oscillator.nextfreq
+    oscillator.freq = oscillator.nextfreq;
   }
-  let w = oscillator.w || 0
+  let w = oscillator.w || 0;
   if (w > 1) {
-    w = w - Math.floor(w)
-    oscillator.freq = oscillator.nextfreq
+    w = w - Math.floor(w);
+    oscillator.freq = oscillator.nextfreq;
   }
-  oscillator.w = w + oscillator.freq / sampleRate
+  oscillator.w = w + oscillator.freq / sampleRate;
   if (isNaN(oscillator.nextfreq)) {
-    return NaN
+    return NaN;
   }
-  return w
+  return w;
 }
 
 // Can be used to reset oscillators and envelopes
 export function nan() {
-  return NaN
+  return NaN;
 }
 
 export function sin(args) {
-	return denorm(Math.sin(osc(this, args[0]) * 2 * Math.PI))
+  return denorm(Math.sin(osc(this, args[0]) * 2 * Math.PI));
 }
 
 export function saw(args) {
-  let tau = osc(this, args[0])
-	return denorm(2 * (tau - Math.round(tau)))
+  const tau = osc(this, args[0]);
+  return denorm(2 * (tau - Math.round(tau)));
 }
 
 export function tri(args) {
-  let tau = osc(this, args[0]) + 0.25
-	return denorm(-1 + 4 * Math.abs(tau - Math.round(tau)))
+  const tau = osc(this, args[0]) + 0.25;
+  return denorm(-1 + 4 * Math.abs(tau - Math.round(tau)));
 }
 
 export function sqr(args) {
-  let tau = osc(this, args[0])
+  let tau = osc(this, args[0]);
   if (isNaN(tau)) {
-    return NaN
+    return NaN;
   }
-  tau = tau - Math.floor(tau)
-	return denorm(tau < arg(args[1], 0.5) ? 1 : -1)
+  tau = tau - Math.floor(tau);
+  return denorm(tau < arg(args[1], 0.5) ? 1 : -1);
 }
 
 // FM synthesizer, modulators 1 and 2 are chained, modulator 3 is parallel
 export function fm(args) {
-  let freq = args[0]
-  let mf1 = args[1]
-  let mi1 = args[2]
-  let mf2 = args[3]
-  let mi2 = args[4]
-  let mf3 = args[5]
-  let mi3 = args[6]
-  this.nextfreq = arg(freq, NaN)
+  const freq = args[0];
+  const mf1 = args[1];
+  const mi1 = args[2];
+  const mf2 = args[3];
+  const mi2 = args[4];
+  const mf3 = args[5];
+  const mi3 = args[6];
+  this.nextfreq = arg(freq, NaN);
   if (!this.freq) {
-    this.freq = this.nextfreq
+    this.freq = this.nextfreq;
   }
-  this.w = (this.w || 0)
-  this.w += 1 / sampleRate
+  this.w = (this.w || 0);
+  this.w += 1 / sampleRate;
   function modulate(tau, f) {
-    let v3 = arg(mi3, 0) * Math.sin(tau * (f * arg(mf3, 0)))
-    let v2 = arg(mi2, 0) * Math.sin(tau * (f * arg(mf2, 0) + v3))
-    let v1 = arg(mi1, 0) * Math.sin(tau * (f * arg(mf1, 0) + v3));
-    return Math.sin(tau * (f + v1 + v2))
+    const v3 = arg(mi3, 0) * Math.sin(tau * (f * arg(mf3, 0)));
+    const v2 = arg(mi2, 0) * Math.sin(tau * (f * arg(mf2, 0) + v3));
+    const v1 = arg(mi1, 0) * Math.sin(tau * (f * arg(mf1, 0) + v3));
+    return Math.sin(tau * (f + v1 + v2));
   }
   if (isNaN(this.nextfreq)) {
-    return NaN
+    return NaN;
   }
-  let tau = this.w * 2 * Math.PI
-  let f = this.freq
-  if (modulate(tau, this.freq) * modulate(tau + 1/sampleRate, this.freq) <= 0) {
-    this.w = this.w - Math.floor(this.w)
-    this.freq = this.nextfreq
+  const tau = this.w * 2 * Math.PI;
+  if (modulate(tau, this.freq) * modulate(tau + 1 / sampleRate, this.freq) <= 0) {
+    this.w = this.w - Math.floor(this.w);
+    this.freq = this.nextfreq;
   }
-	return denorm(modulate(tau, this.freq))
+  return denorm(modulate(tau, this.freq));
 }
 
 
 // Switches values at give tempo, NaN is returned when the switch happens
 function next(args, seq, f) {
-  let beatDuration = sampleRate / (arg(args[0], NaN) / 60) * (seq.mul||1);
+  const beatDuration = sampleRate / (arg(args[0], NaN) / 60) * (seq.mul || 1);
   if (isNaN(beatDuration)) {
-    return NaN
+    return NaN;
   }
-  seq.t = (seq.t+1) || beatDuration
+  seq.t = (seq.t + 1) || beatDuration;
   if (seq.t >= beatDuration) {
-    seq.t = 0
-    seq.beat = (seq.beat !== undefined ? seq.beat+1 : 0)
+    seq.t = 0;
+    seq.beat = (seq.beat !== undefined ? seq.beat + 1 : 0);
   }
-  let len = args.length - 1
+  const len = args.length - 1;
   if (len <= 0) {
-    return (seq.t === 0 ? NaN : 0)
+    return (seq.t === 0 ? NaN : 0);
   }
   let i = (Math.floor(seq.beat) + len) % len;
   i = (i + len) % len;
-  return f(args, i, seq.t/beatDuration)
+  return f(args, i, seq.t / beatDuration);
 }
 
 // Switches values evaluating the current value on each call
 export function loop(args) {
   return next(args, this, (a, i, offset) => {
-    let res = a[i+1]()
-    return offset === 0 ? NaN : res
-  })
+    const res = a[i + 1]();
+    return offset === 0 ? NaN : res;
+  });
 }
 
 // Switches values evaluating them once per beat
 export function seq(args) {
   return next(args, this, (a, i, offset) => {
     if (offset === 0) {
-      let arg = a[i+1]
+      let arg = a[i + 1];
       this.mul = 1;
       if (arg.car) {
-	this.mul = arg.car();
-	arg = arg.cdr;
-	if (arg.car) {
-	  let steps = [];
-	  while (arg.car) {
-	    steps.push(arg.car());
-	    arg = arg.cdr;
-	  }
-	  steps.push(arg());
-	  this.value = (delta) => {
-	    let n = steps.length-1;
-	    let i = Math.floor(n * delta)
-	    let from = steps[i];
-	    let to = steps[i+1];
-	    let k = (delta - i/n)*n;
-	    return from + (to - from) * k;
-	  }
-	  return NaN
-	}
+        this.mul = arg.car();
+        arg = arg.cdr;
+        if (arg.car) {
+          const steps = [];
+          while (arg.car) {
+            steps.push(arg.car());
+            arg = arg.cdr;
+          }
+          steps.push(arg());
+          this.value = (delta) => {
+            const n = steps.length - 1;
+            const index = Math.floor(n * delta);
+            const from = steps[index];
+            const to = steps[index + 1];
+            const k = (delta - index / n) * n;
+            return from + (to - from) * k;
+          };
+          return NaN;
+        }
       }
-      let val = arg();
-      this.value = () => val
-      return NaN
+      const val = arg();
+      this.value = () => val;
+      return NaN;
     }
-    return this.value(offset)
-  })
+    return this.value(offset);
+  });
 }
 
 // env()             -> 0
@@ -250,84 +247,82 @@ export function env(args) {
   // Zero arguments = zero signal level
   // One argument = unmodied signal value
   if (args.length < 2) {
-    return arg(args[0], 128)
+    return arg(args[0], 128);
   }
   // Last argument is signal value
-  let v = arg(args[args.length-1], NaN)
+  const v = arg(args[args.length - 1], NaN);
   // Update envelope
-  this.e = this.e || []
-  this.d = this.d || []
-  this.segment = this.segment || 0
-  this.t = this.t || 0
-  if (args.length == 2) {
-    this.d[0] = 0.0625 * sampleRate
-    this.e[0] = 1
-    this.d[1] = arg(args[0], NaN) * sampleRate
-    this.e[1] = 0
+  this.e = this.e || [];
+  this.d = this.d || [];
+  this.segment = this.segment || 0;
+  this.t = this.t || 0;
+  if (args.length === 2) {
+    this.d[0] = 0.0625 * sampleRate;
+    this.e[0] = 1;
+    this.d[1] = arg(args[0], NaN) * sampleRate;
+    this.e[1] = 0;
   } else {
-    this.d[0] = arg(args[0], NaN) * sampleRate
-    this.e[0] = 1
-    for (var i = 1; i < args.length - 1; i = i + 2) {
-      this.d[(i-1)/2+1] = arg(args[i], NaN) * sampleRate
+    this.d[0] = arg(args[0], NaN) * sampleRate;
+    this.e[0] = 1;
+    for (let i = 1; i < args.length - 1; i = i + 2) {
+      this.d[(i - 1) / 2 + 1] = arg(args[i], NaN) * sampleRate;
       if (i + 1 < args.length - 1) {
-        this.e[(i-1)/2+1] = arg(args[i+1], NaN)
+        this.e[(i - 1) / 2 + 1] = arg(args[i + 1], NaN);
       } else {
-        this.e[(i-1)/2+1] = 0
+        this.e[(i - 1) / 2 + 1] = 0;
       }
     }
   }
   if (isNaN(v)) {
-    this.segment = 0
-    this.t = 0
-    return NaN
-  } else {
-    this.t++;
-    if (this.t > this.d[this.segment]) {
-      this.t = 0
-      this.segment++
-    }
-    if (this.segment >= this.e.length) {
-      return 128 // end of envelope
-    }
-    let prevAmp = (this.segment == 0 ? 0 : this.e[this.segment-1])
-    let amp = this.e[this.segment]
-    return (v - 128) * (prevAmp + (amp - prevAmp) * (this.t / this.d[this.segment])) + 128
+    this.segment = 0;
+    this.t = 0;
+    return NaN;
   }
+  this.t++;
+  if (this.t > this.d[this.segment]) {
+    this.t = 0;
+    this.segment++;
+  }
+  if (this.segment >= this.e.length) {
+    return 128; // end of envelope
+  }
+  const prevAmp = (this.segment === 0 ? 0 : this.e[this.segment - 1]);
+  const amp = this.e[this.segment];
+  return (v - 128) * (prevAmp + (amp - prevAmp) * (this.t / this.d[this.segment])) + 128;
 }
 
 // mixes signals and cuts amplitude to avoid overflows
 export function mix(args) {
-  let v = 0
-  this.lastSamples = this.lastSamples || {}
-  for (var i = 0; i < args.length; i++) {
-    let sample = args[i]()
+  let v = 0;
+  this.lastSamples = this.lastSamples || {};
+  for (let i = 0; i < args.length; i++) {
+    let sample = args[i]();
     if (isNaN(sample)) {
-      sample = this.lastSamples[i]||0
+      sample = this.lastSamples[i] || 0;
     } else {
-      this.lastSamples[i] = sample
+      this.lastSamples[i] = sample;
     }
-    v = v + (sample - 128) / 127
+    v = v + (sample - 128) / 127;
   }
   if (args.length > 0) {
-    v = v / Math.sqrt(args.length)
-    return denorm(Math.max(Math.min(v, 1), -1))
-  } else {
-    return 128
+    v = v / Math.sqrt(args.length);
+    return denorm(Math.max(Math.min(v, 1), -1));
   }
+  return 128;
 }
 
 // Simple one pole IIR low-pass filter, can be used to construct high-pass and
 // all-pass filters as well (hpf=x-lpf(x), apf=hpf-lpf)
 export function lpf(args) {
-  let x = args[0]
-  let fc = args[1]
-  let cutoff = arg(fc, 200)
-  let value = arg(x, NaN)
+  const x = args[0];
+  const fc = args[1];
+  const cutoff = arg(fc, 200);
+  const value = arg(x, NaN);
   if (isNaN(value) || isNaN(cutoff)) {
-    return NaN
+    return NaN;
   }
-  let wa = Math.tan(Math.PI * arg(fc, 200) / sampleRate);
-  let a = wa / (1.0 + wa);
+  const wa = Math.tan(Math.PI * arg(fc, 200) / sampleRate);
+  const a = wa / (1.0 + wa);
   this.lpf = this.lpf || 128;
   this.lpf = this.lpf + (value - this.lpf) * a;
   return this.lpf;

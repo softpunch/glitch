@@ -1,17 +1,19 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
+import React from 'react';
 
-import { connect } from 'react-redux'
+import { connect } from 'react-redux';
 
-import { tab } from '../reducers'
+import { tab } from '../reducers';
 
-import {YELLOW, GRAY, WHITE, PINK} from '../colors'
+import { YELLOW, GRAY, PINK } from '../colors';
 
-import Visualizer from './Visualizer'
-import Toolbar from './Toolbar'
-import Editor from './Editor'
-import Library from './Library'
-import Help from './Help'
+import Visualizer from './Visualizer';
+import Toolbar from './Toolbar';
+import Editor from './Editor';
+import Library from './Library';
+import Help from './Help';
+
+const optstring = React.PropTypes.string;
+const string = React.PropTypes.string.isRequired;
 
 const appContainerStyle = {
   display: 'flex',
@@ -20,19 +22,19 @@ const appContainerStyle = {
   maxHeight: '100vh',
   flex: 1,
   backgroundColor: GRAY,
-}
+};
 
 const headerStyle = {
   display: 'flex',
   height: '72px',
-  lineHeight:'72px',
-  fontSize: '18pt'
-}
+  lineHeight: '72px',
+  fontSize: '18pt',
+};
 
 const titleStyle = {
   color: YELLOW,
   fontWeight: 600,
-}
+};
 
 const errorIconStyle = {
   color: PINK,
@@ -41,80 +43,61 @@ const errorIconStyle = {
   width: '72px',
   lineHeight: '72px',
   textAlign: 'center',
-}
+};
 
 const mainSectionStyle = {
   display: 'flex',
   flexDirection: 'column',
   flex: 1,
   padding: '0 0 0 1em',
-}
+};
 
-class App extends React.Component {
-  render() {
-    return <div style={appContainerStyle}>
-      <MainSection tab={this.props.navigation.tab} error={this.props.error} />
-      <Toolbar />
-    </div>
+function App(props) {
+  return (<div style={appContainerStyle}>
+    <MainSection tab={props.tab} error={props.error} />
+    <Toolbar />
+  </div>);
+}
+App.propTypes = { tab: string, error: optstring };
+
+function MainSection(props) {
+  let content;
+  switch (props.tab) {
+    case tab.EDITOR: content = <Editor />; break;
+    case tab.LIBRARY: content = <Library />; break;
+    case tab.HELP: content = <Help />; break;
+    default: break;
   }
+  return (<div style={mainSectionStyle}>
+    <Header error={props.error} />
+    {content}
+  </div>);
+}
+MainSection.propTypes = { tab: string, error: optstring };
+
+function Header({ error }) {
+  return (<div style={headerStyle}>
+    <Title />
+    <ErrorIcon error={error} />
+    <Visualizer />
+  </div>);
+}
+Header.propTypes = { error: optstring };
+
+function Title() {
+  return (<div style={titleStyle}>
+    #glitch
+  </div>);
 }
 
-class MainSection extends React.Component {
-  render() {
-    var content
-    switch (this.props.tab) {
-      case tab.EDITOR: content = <Editor />; break
-      case tab.LIBRARY: content = <Library />; break
-      case tab.HELP: content = <Help />; break
-    }
-    return <div style={mainSectionStyle}>
-      <Header error={this.props.error} />
-      {content}
-    </div>
-  }
+function ErrorIcon({ error }) {
+  const style = Object.assign({}, errorIconStyle, { visibility: (error ? 'visible' : 'hidden') });
+  return <i className="fa fa-exclamation-triangle" style={style}></i>;
 }
-
-
-class Header extends React.Component {
-  render() {
-    return <div style={headerStyle}>
-      <Title />
-      <ErrorIcon error={this.props.error} />
-      <Visualizer />
-    </div>
-  }
-}
-
-class Title extends React.Component {
-  render() {
-    return <div style={titleStyle}>
-      #glitch
-    </div>
-  }
-}
-
-class ErrorIcon extends React.Component {
-  render() {
-    var v = (this.props.error ? 'visible' : 'hidden');
-    return <i className="fa fa-exclamation-triangle" style={Object.assign(errorIconStyle, {visibility: v})}></i>
-  }
-}
-
-class IconButton extends React.Component {
-  render() {
-    return <div {...this.props}
-      style={{
-	height: '72px', lineHeight: '72px', textAlign: 'center', cursor: 'pointer',
-	fontSize: '20pt',
-	opacity: (this.props.active ? '1' : '0.4'),
-      }}>
-      <i className={"fa " + this.props.icon} style={{color: this.props.color}}></i>
-  </div>
-  }
-}
+ErrorIcon.propTypes = { error: optstring };
 
 function mapStateToProps(state) {
-  return {navigation: state.navigation, error: state.expr.error}
+  return { tab: state.navigation.tab, error: state.expr.error };
 }
 
-export default connect(mapStateToProps)(App)
+export default connect(mapStateToProps)(App);
