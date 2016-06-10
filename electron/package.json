@@ -1,7 +1,7 @@
 {
   "name": "glitch",
   "productName": "Glitch",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Algorithmic music synthesizer",
   "main": "index.js",
   "scripts": {
@@ -16,6 +16,7 @@
   "license": "MIT",
   "devDependencies": {
     "electron-packager": "^7.0.2",
-    "electron-prebuilt": "^1.2.0"
+    "electron-prebuilt": "^1.2.0",
+    "webpack": "^1.13.1"
   }
 }
