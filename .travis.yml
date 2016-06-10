@@ -17,6 +17,7 @@ after_success:
       zip -q -r ../../glitch-windows-ia32.zip Glitch-win32-ia32 &&
       zip -q -r ../../glitch-macosx.zip Glitch-darwin-x64 &&
       cd ../..
+      ls -l
     fi
 deploy:
   provider: releases
