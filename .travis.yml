@@ -2,4 +2,30 @@ language: node_js
 node_js:
   - "5"
   - "4"
-
+after_success:
+  - |
+    if test "$TRAVIS_TAG"
+      npm run build
+      cd electron
+      npm install
+      npm run build
+      npm run pkg
+      cd pkg
+      zip -r ../../glitch-linux-x64.zip Glitch-linux-x64
+      zip -r ../../glitch-linux-ia32.zip Glitch-linux-ia32
+      zip -r ../../glitch-windows-x64.zip Glitch-win32-x64
+      zip -r ../../glitch-windows-ia32.zip Glitch-win32-ia32
+      zip -r ../../glitch-macosx.zip Glitch-darwin-x64
+    fi
+deploy:
+  provider: releases
+  api_key: $GITHUB_ACCESS_TOKEN
+  file:
+    - glitch-linux-x64.zip
+    - glitch-linux-ia32.zip
+    - glitch-windows-x64.zip
+    - glitch-windows-ia32.zip
+    - glitch-macosx.zip
+  skip_cleanup: true
+  on:
+    tags: true
