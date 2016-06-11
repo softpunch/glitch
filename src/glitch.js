@@ -21,8 +21,7 @@ export default class Glitch {
   compile(e) {
     const f = expr.parse(e, this.vars, functions);
     if (f) {
-      this.src = e;
-      this.nextExpr = f;
+      this.next = {src: e, expr: f};
       return true;
     }
     return false;
@@ -33,14 +32,21 @@ export default class Glitch {
       this.lastSample = (((v % 256) + 256) % 256) / 128 - 1;
     }
     this.frame++;
-    if (this.vars.bpm) {
+    let applyNext = true;
+    const bpm = (this.vars.bpm ? this.vars.bpm() : 0);
+    if (bpm) {
+      applyNext = false;
       this.measure++;
-      if (this.measure > this.sampleRate * 60 / this.vars.bpm()) {
+      if (this.measure > this.sampleRate * 60 / bpm) {
+        console.log('apply', this.measure, this.sampleRate * 60 / bpm);
         this.measure = 0;
-        this.expr = this.nextExpr;
+        applyNext = true;
       }
-    } else {
-      this.expr = this.nextExpr;
+    }
+    if (applyNext && this.next) {
+      this.expr = this.next.expr;
+      this.src = this.next.src;
+      this.next = undefined;
     }
     this.vars.t(Math.round(this.frame * 8000 / this.sampleRate));
     return this.lastSample;
