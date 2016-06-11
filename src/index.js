@@ -79,8 +79,8 @@ if (window.location.hash) {
 }
 
 document.onmousemove = (e) => {
-  glitch.vars.x(e.pageX);
-  glitch.vars.y(e.pageY);
+  glitch.vars.x(e.pageX / window.innerWidth);
+  glitch.vars.y(e.pageY / window.innerHeight);
 };
 
 document.onkeydown = (e) => {
