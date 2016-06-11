@@ -15,10 +15,8 @@ after_success:
       npm run build &&
       npm run pkg &&
       cd pkg &&
-      zip -q -r ../../glitch-linux-x64.zip Glitch-linux-x64 &&
-      zip -q -r ../../glitch-linux-ia32.zip Glitch-linux-ia32 &&
-      zip -q -r ../../glitch-windows-x64.zip Glitch-win32-x64 &&
-      zip -q -r ../../glitch-windows-ia32.zip Glitch-win32-ia32 &&
+      zip -q -r ../../glitch-linux.zip Glitch-linux-x64 &&
+      zip -q -r ../../glitch-windows.zip Glitch-win32-ia32 &&
       zip -q -r ../../glitch-macosx.zip Glitch-darwin-x64 &&
       cd ../..
       ls -l
@@ -27,10 +25,8 @@ deploy:
   provider: releases
   api_key: $GITHUB_ACCESS_TOKEN
   file:
-    - glitch-linux-x64.zip
-    - glitch-linux-ia32.zip
-    - glitch-windows-x64.zip
-    - glitch-windows-ia32.zip
+    - glitch-linux.zip
+    - glitch-windows.zip
     - glitch-macosx.zip
   skip_cleanup: true
   on:
