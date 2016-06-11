@@ -11,17 +11,18 @@ export default class Glitch {
   reset() {
     this.vars = {
       t: expr.varExpr(0),
-      r: expr.varExpr(0),
       x: expr.varExpr(),
       y: expr.varExpr(0),
     };
     this.expr = expr.parse(this.src, this.vars, functions);
+    this.frame = 0;
+    this.measure = 0;
   }
   compile(e) {
     const f = expr.parse(e, this.vars, functions);
     if (f) {
       this.src = e;
-      this.expr = f;
+      this.nextExpr = f;
       return true;
     }
     return false;
@@ -31,8 +32,17 @@ export default class Glitch {
     if (!isNaN(v)) {
       this.lastSample = (((v % 256) + 256) % 256) / 128 - 1;
     }
-    this.vars.r(this.vars.r() + 1);
-    this.vars.t(Math.round(this.vars.r() * 8000 / this.sampleRate));
+    this.frame++;
+    if (this.vars.bpm) {
+      this.measure++;
+      if (this.measure > this.sampleRate * 60 / this.vars.bpm()) {
+        this.measure = 0;
+        this.expr = this.nextExpr;
+      }
+    } else {
+      this.expr = this.nextExpr;
+    }
+    this.vars.t(Math.round(this.frame * 8000 / this.sampleRate));
     return this.lastSample;
   }
   onaudioprocess(e) {
