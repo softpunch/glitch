@@ -2,7 +2,7 @@
   "scripts": {
     "watch": "webpack -w -d",
     "test": "mocha --compilers js:babel-core/register",
-    "build": "webpack",
+    "build": "webpack -p",
     "lint": "eslint src/**/*.js"
   },
   "devDependencies": {

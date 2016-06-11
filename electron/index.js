@@ -8,7 +8,6 @@ let mainWindow;
 
 function createWindow () {
   let iconPath = __dirname + '/build/glitch192x192.png';
-  console.log(iconPath)
   mainWindow = new BrowserWindow({
     width: 640,
     height: 480,

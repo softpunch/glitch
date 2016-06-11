@@ -3,6 +3,7 @@ node_js:
   - "5"
   - "4"
 after_success:
+  - apt-get install -y -q wine
   - |
     if test "$TRAVIS_TAG" ; then
       npm run build &&
