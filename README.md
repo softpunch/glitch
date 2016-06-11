@@ -20,9 +20,7 @@ Sequencers:
 
 - loop(bpm, ...)
 - seq(bpm, ...)
-- slide(bpm,...)
 - a(index, ...)
-- scale(index, mode)
 
 Instruments:
 
@@ -41,6 +39,7 @@ Effects:
 
 Utils:
 
+- scale(index, mode)
 - hz(note)
 - r(max)
 - l(x)
