@@ -1,5 +1,27 @@
 import { sampleRate } from './audio';
 
+import b64bd from 'base64!./samples/bd.wav';
+import b64cb from 'base64!./samples/cb.wav';
+import b64cl from 'base64!./samples/cl.wav';
+import b64hh from 'base64!./samples/hh.wav';
+import b64mc from 'base64!./samples/mc.wav';
+import b64mt from 'base64!./samples/mt.wav';
+import b64oh from 'base64!./samples/oh.wav';
+import b64rs from 'base64!./samples/rs.wav';
+import b64sn from 'base64!./samples/sn.wav';
+
+const TR808Samples = [
+  atob(b64bd),
+  atob(b64cb),
+  atob(b64cl),
+  atob(b64hh),
+  atob(b64mc),
+  atob(b64mt),
+  atob(b64oh),
+  atob(b64rs),
+  atob(b64sn),
+];
+
 function denorm(x) {
   return x * 127 + 128;
 }
@@ -321,4 +343,29 @@ export function lpf(args) {
   this.lpf = this.lpf || 128;
   this.lpf = this.lpf + (value - this.lpf) * a;
   return this.lpf;
+}
+
+export function tr808(args) {
+  this.i = this.i || 0;
+  let drum = arg(args[0], NaN);
+  let volume = arg(args[1], 1);
+  if (!isNaN(drum) && !isNaN(volume)) {
+    let sample = TR808Samples[((drum%TR808Samples.length)+TR808Samples.length)%TR808Samples.length];
+    if (this.i * 2 + 0x80 + 1 < sample.length) {
+      let hi = sample.charCodeAt(0x80 + this.i * 2+1);
+      let lo = sample.charCodeAt(0x80 + this.i * 2);
+      let sign = hi & (1 << 7);
+      let v = (hi << 8) | lo;
+      if (sign) {
+        v = -v + 0x10000;
+      }
+      let x =  v / 0x7fff;
+      this.i++;
+      return denorm(x * volume);
+    } else {
+      return NaN
+    }
+  }
+  this.i = 0;
+  return NaN
 }
