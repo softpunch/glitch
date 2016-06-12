@@ -1,5 +1,6 @@
 import * as expr from 'expr';
 import * as functions from './glitchFuncs';
+import * as samples from './glitchSamples';
 
 export default class Glitch {
   constructor(sampleRate = 44100) {
@@ -14,12 +15,13 @@ export default class Glitch {
       x: expr.varExpr(),
       y: expr.varExpr(0),
     };
-    this.expr = expr.parse(this.src, this.vars, functions);
+    this.funcs = Object.assign({}, functions, samples)
+    this.expr = expr.parse(this.src, this.vars, this.funcs);
     this.frame = 0;
     this.measure = 0;
   }
   compile(e) {
-    const f = expr.parse(e, this.vars, functions);
+    const f = expr.parse(e, this.vars, this.funcs);
     if (f) {
       this.next = {src: e, expr: f};
       return true;
